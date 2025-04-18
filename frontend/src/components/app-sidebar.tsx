@@ -54,7 +54,7 @@ const data = {
       items: [
         {
           title: "Tình trạng",
-          url: "#",
+          url: "/status",
         }
       ],
     },
@@ -65,52 +65,52 @@ const data = {
       items: [
         {
           title: "Yêu cầu, góp ý",
-          url: "#",
+          url: "/request",
         },
         {
           title: "Thông tin nhân viên",
-          url: "#",
+          url: "/employeeinfo",
         },
         {
           title: "Chính sách công ty",
-          url: "#",
+          url: "/policies",
         },
         {
           title: "Lương, thưởng",
-          url: "#",
+          url: "/payment",
         },
       ],
     },
     {
       title: "Quản lí",
-      url: "#",
+      url: "/management",
       icon: Rocket ,
       items: [
         {
           title: "Quản lí dự án",
-          url: "#",
+          url: "/project-management",
         },
         {
           title: "Assign tasks",
-          url: "#",
+          url: "/tasks-management",
         },
         {
           title: "Thông báo",
-          url: "#",
+          url: "/notification",
         },
         {
           title: "Lịch",
-          url: "#",
+          url: "/calendar",
         },
         {
           title: "Thông tin",
-          url: "#",
+          url: "/information",
         },
       ],
     },
     {
       title: "Cài đặt",
-      url: "#",
+      url: "/settings",
       icon: Settings2
     },
   ],

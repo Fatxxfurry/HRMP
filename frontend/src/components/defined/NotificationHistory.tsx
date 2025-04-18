@@ -1,13 +1,15 @@
 import React from 'react'
 import { Bell } from 'lucide-react';
-
+import {Link} from "react-router"
 interface NotificationHistoryProps {
     Header?: string;
     Date?: string; // hoặc kiểu phù hợp tùy vào cách bạn dùng
+    Sender?: string; // hoặc kiểu phù hợp tùy vào cách bạn dùng
 }
 
-export default function NotificationHistory({ Header, Date }: NotificationHistoryProps) {
+export default function NotificationHistory({ Header, Date, Sender }: NotificationHistoryProps) {
     return (
+        <Link to='/request-detail' style={{ textDecoration: 'none' }}> 
         <div className="flex flex-row gap-4 p-4 pt-0 m-4 bg-gray-200 rounded-lg">
             <div className="flex items-center">
                 <Bell />
@@ -20,6 +22,10 @@ export default function NotificationHistory({ Header, Date }: NotificationHistor
                     {Date}
                 </span>
             </div>
+            <span className="flex-1 text-right text-gray-500 mt-2">
+                    Người gửi: {Sender}
+            </span>
         </div>
+        </Link>
     )
 }

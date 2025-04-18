@@ -1,5 +1,6 @@
 "use client"
 import * as React from 'react'
+import { useState } from 'react'
 import { Button } from "@/components/ui/button"
 import {
     Form,
@@ -40,6 +41,15 @@ import {
     TableRow,
 } from "@/components/ui/table"
 import { ScrollArea } from "@/components/ui/scroll-area"
+import { X } from "lucide-react"
+import {
+    Dialog,
+    DialogContent,
+    DialogDescription,
+    DialogHeader,
+    DialogTitle,
+    DialogTrigger,
+} from "@/components/ui/dialog"
 
 const formSchema = z.object({
     projectname: z.string(),
@@ -53,11 +63,25 @@ const formSchema = z.object({
 
 const TaskProjectdata = [
     { id: "1", name: "Center a div", projectname: "Website cho FPT", date: "1/1/2024", deadline: "1/1/2025", status: "Hoàn thành", employee: "Nguyễn Văn A", department: "Phòng A" },
-    { id: "2", name: "Delete database", projectname: "Website cho FPT", date: "1/1/2024", deadline: "1/1/2025", status: "Đang thực hiện", employee: "Nguyễn Văn A", department: "Phòng A" } ,
-    { id: "3", name: "Sell data", projectname: "Website cho FPT", date: "1/1/2024", deadline: "1/1/2025", status: "Đang thực hiện",employee: "NaH",department: "Phòng A"  },
+    { id: "2", name: "Delete database", projectname: "Website cho Google", date: "1/1/2024", deadline: "1/1/2025", status: "Đang thực hiện", employee: "Nguyễn Văn A", department: "Phòng A" },
+    { id: "3", name: "Sell data", projectname: "Website cho FPT", date: "1/1/2024", deadline: "1/1/2025", status: "Đang thực hiện", employee: "NaH", department: "Phòng A" },
 ]
-export default function AdminAssigntask() {
 
+export default function AdminAssigntask() {
+    const [editTask, setEditTask] = useState<typeof TaskProjectdata[0] | null>(null)
+    const [deleteTaskId, setDeleteTaskId] = useState<string | null>(null)
+    const [showEditDialog, setShowEditDialog] = useState(false)
+    const [showDeleteDialog, setShowDeleteDialog] = useState(false)
+
+    function handleEdit(task: typeof TaskProjectdata[0]) {
+        setEditTask(task)
+        setShowEditDialog(true)
+    }
+
+    function handleDelete(id: string) {
+        setDeleteTaskId(id)
+        setShowDeleteDialog(true)
+    }
 
     const form = useForm<z.infer<typeof formSchema>>({
         resolver: zodResolver(formSchema),
@@ -75,21 +99,45 @@ export default function AdminAssigntask() {
 
         console.log(values)
     }
+    const [projectfilter, setprojectfilter] = useState("")
+    const projects = [...new Set(TaskProjectdata.map((project) => project.projectname))]
+    const filteredData = TaskProjectdata.filter((project) => {
+        const projectMatch = !projectfilter || project.projectname === projectfilter
+        return projectMatch
+    })
+    const clearFilters = () => {
+        setprojectfilter("")
+
+    }
 
     return (
         <div className="flex flex-1 flex-col gap-4 p-4 pt-0">
             <div className="grid auto-rows-min gap-4 md:grid-cols-1">
                 <div className="aspect-auto rounded-xl bg-muted/50 p-4" >
-                    <Select>
-                        <SelectTrigger className="w-[180px]">
-                            <SelectValue placeholder="Tên dự án" />
-                        </SelectTrigger>
-                        <SelectContent>
-                            <SelectItem value="projecta">Project A</SelectItem>
-                            <SelectItem value="projectb">Project B</SelectItem>
-                            <SelectItem value="projectc">Project C</SelectItem>
-                        </SelectContent>
-                    </Select>
+                    <div className="flex flex-row gap-4  mb-2">
+                        <Select value={projectfilter} onValueChange={setprojectfilter}>
+                            <SelectTrigger className="w-[180px]">
+                                <SelectValue placeholder="Tên dự án" />
+                            </SelectTrigger>
+                            <SelectContent>
+                                {projects.map((pro) => (
+                                    <SelectItem key={pro} value={pro} >
+                                        {pro}
+                                    </SelectItem>
+                                ))}
+                            </SelectContent>
+                        </Select>
+
+                        {projectfilter && (
+                            <div className="space-y-2">
+                                <Button variant="outline" className="" onClick={clearFilters}>
+                                    <X className="h-4 w-4 mr-2" />
+                                    Xóa bộ lọc
+                                </Button>
+                            </div>
+
+                        )}
+                    </div>
                     <ScrollArea className="h-[250px] rounded-md border p-4">
                         <Table >
                             <TableCaption>Danh sách task và dự án tương ứng.</TableCaption>
@@ -103,30 +151,91 @@ export default function AdminAssigntask() {
                                     <TableHead >Trạng thái</TableHead>
                                     <TableHead >Nhân viên thực hiện</TableHead>
                                     <TableHead >Phòng ban quản lí</TableHead>
+                                    <TableHead >Thao tác</TableHead>
+
                                 </TableRow>
                             </TableHeader>
                             <TableBody>
-                                {TaskProjectdata.length > 0 ? (
-                                    TaskProjectdata.map((task) => (
+                                {filteredData.length > 0 ? (
+                                    filteredData.map((task) => (
                                         <TableRow key={task.id}>
                                             <TableCell className="font-medium">{task.id}</TableCell>
                                             <TableCell>{task.name}</TableCell>
                                             <TableCell>{task.projectname}</TableCell>
                                             <TableCell>{task.date}</TableCell>
                                             <TableCell>{task.deadline}</TableCell>
-                                            <TableCell>
-                                                <Select >
-                                                    <SelectTrigger className="w-[120px]">
-                                                        <SelectValue />
-                                                    </SelectTrigger>
-                                                    <SelectContent>
-                                                        <SelectItem value="finished">Hoàn thành</SelectItem>
-                                                        <SelectItem value="unfinished">Đang thực hiện</SelectItem>
-                                                    </SelectContent>
-                                                </Select></TableCell>
-                                                <TableCell>{task.employee}</TableCell>
-                                                <TableCell>{task.department}</TableCell>
+                                            <TableCell>{task.status}</TableCell>
+                                            <TableCell>{task.employee}</TableCell>
+                                            <TableCell>{task.department}</TableCell>
+                                            <TableCell className="space-x-2">
+                                                <Button variant="outline" size="sm" onClick={() => handleEdit(task)}>
+                                                    Sửa
+                                                </Button>
+                                                <Dialog open={showEditDialog} onOpenChange={setShowEditDialog}>
+                                                    <DialogContent>
+                                                        <DialogHeader>
+                                                            <DialogTitle>Sửa Task</DialogTitle>
+                                                        </DialogHeader>
+                                                        {editTask && (
+                                                            <form onSubmit={form.handleSubmit(onSubmit)}>
+                                                                <div className="space-y-2">
+                                                                    <Input
+                                                                        defaultValue={editTask.name}
+                                                                        {...form.register("taskname")}
+                                                                        placeholder="Tên Task"
+                                                                    />
+                                                                    <Input
+                                                                        defaultValue={editTask.projectname}
+                                                                        {...form.register("projectname")}
+                                                                        placeholder="Tên Dự Án"
+                                                                    />
+                                                                    <Input
+                                                                        defaultValue={editTask.employee}
+                                                                        {...form.register("employeeid")}
+                                                                        placeholder="Nhân viên"
+                                                                    />
+                                                                    <Input
+                                                                        defaultValue={editTask.department}
+                                                                        {...form.register("department")}
+                                                                        placeholder="Phòng ban"
+                                                                    />
+                                                                    {/* Các trường khác tương tự */}
+                                                                    <Button type="submit">Lưu thay đổi</Button>
+                                                                </div>
+                                                            </form>
+                                                        )}
+                                                    </DialogContent>
+                                                </Dialog>
 
+                                                <Button variant="destructive" size="sm" onClick={() => handleDelete(task.id)}>
+                                                    Xóa
+                                                </Button>
+                                                <Dialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
+                                                    <DialogContent>
+                                                        <DialogHeader>
+                                                            <DialogTitle>Xác nhận xoá</DialogTitle>
+                                                            <DialogDescription>
+                                                                Bạn có chắc chắn muốn xoá task này không? Hành động này không thể hoàn tác.
+                                                            </DialogDescription>
+                                                        </DialogHeader>
+                                                        <div className="flex justify-end gap-2">
+                                                            <Button variant="outline" onClick={() => setShowDeleteDialog(false)}>
+                                                                Huỷ
+                                                            </Button>
+                                                            <Button
+                                                                variant="destructive"
+                                                                onClick={() => {
+                                                                    console.log("Xoá task ID:", deleteTaskId)
+                                                                    setShowDeleteDialog(false)
+                                                                }}
+                                                            >
+                                                                Xoá
+                                                            </Button>
+                                                        </div>
+                                                    </DialogContent>
+                                                </Dialog>
+
+                                            </TableCell>
                                         </TableRow>
                                     ))
                                 ) : (
@@ -142,7 +251,7 @@ export default function AdminAssigntask() {
                 </div>
 
             </div>
-            <div className="grid auto-rows-min gap-4 md:grid-cols-2">
+            <div className="grid auto-rows-min gap-4 md:grid-cols-1">
                 <div className="aspect-video rounded-xl bg-muted/50 p-4" >
                     <Form {...form}>
                         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
@@ -272,8 +381,8 @@ export default function AdminAssigntask() {
                                         <FormMessage />
                                     </FormItem>
                                 )}
-                            />  
-                             <FormField
+                            />
+                            <FormField
                                 control={form.control}
                                 name="department"
                                 render={({ field }) => (
@@ -294,10 +403,7 @@ export default function AdminAssigntask() {
                     </Form>
 
                 </div>
-                <div className="aspect-video rounded-xl bg-muted/50 p-4" >
 
-
-                </div>
 
 
 
