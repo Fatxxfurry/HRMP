@@ -1,13 +1,14 @@
+"use client"
 import * as React from "react"
 import {
   AudioWaveform,
-  CalendarCheck2 ,
-  Users ,
-  Rocket ,
+  CalendarCheck2,
+  Users,
+  Rocket,
   Command,
   GalleryVerticalEnd,
   Settings2,
-  PanelsTopLeft ,
+  PanelsTopLeft,
 } from "lucide-react"
 
 import { NavMain } from "@/components/nav-main"
@@ -20,9 +21,10 @@ import {
   SidebarHeader,
   SidebarRail,
 } from "@/components/ui/sidebar"
+import { useAuth } from "@/context/AuthContext"
 
 // This is sample data.
-const data = {
+const Admindata = {
   user: {
     name: "shadcn",
     email: "m@example.com",
@@ -34,15 +36,88 @@ const data = {
       logo: GalleryVerticalEnd,
       plan: "Enterprise",
     },
+  ],
+  navMain: [
     {
-      name: "Acme Corp.",
-      logo: AudioWaveform,
-      plan: "Startup",
+      title: "Chấm công",
+      url: "#",
+      icon: CalendarCheck2,
+      isActive: true,
+      items: [
+        {
+          title: "Tình trạng",
+          url: "/admin/timekeeping",
+        }
+      ],
     },
     {
-      name: "Evil Corp.",
-      logo: Command,
-      plan: "Free",
+      title: "Nhân viên",
+      url: "#",
+      icon: Users,
+      items: [
+        {
+          title: "Yêu cầu, góp ý",
+          url: "/admin/request",
+        },
+        {
+          title: "Thông tin nhân viên",
+          url: "/admin/employeeinfo",
+        },
+        {
+          title: "Chính sách công ty",
+          url: "/admin/policies",
+        },
+        {
+          title: "Lương, thưởng",
+          url: "/admin/payment",
+        },
+      ],
+    },
+    {
+      title: "Quản lí",
+      url: "#",
+      icon: Rocket,
+      items: [
+        {
+          title: "Quản lí dự án",
+          url: "/admin/project-management",
+        },
+        {
+          title: "Assign tasks",
+          url: "/admin/tasks-management",
+        },
+        {
+          title: "Thông báo",
+          url: "/admin/notification",
+        },
+        {
+          title: "Lịch",
+          url: "/admin/calendar",
+        },
+        {
+          title: "Thông tin",
+          url: "/admin/information",
+        },
+      ],
+    },
+    {
+      title: "Cài đặt",
+      url: "#",
+      icon: Settings2
+    },
+  ],
+}
+const Userdata = {
+  user: {
+    name: "shadcn",
+    email: "m@example.com",
+    avatar: "/avatars/shadcn.jpg",
+  },
+  teams: [
+    {
+      name: "Acme Inc",
+      logo: GalleryVerticalEnd,
+      plan: "Enterprise",
     },
   ],
   navMain: [
@@ -54,7 +129,7 @@ const data = {
       items: [
         {
           title: "Tình trạng",
-          url: "/status",
+          url: "/user/timekeeping",
         }
       ],
     },
@@ -65,68 +140,72 @@ const data = {
       items: [
         {
           title: "Yêu cầu, góp ý",
-          url: "/request",
+          url: "/user/request",
         },
         {
           title: "Thông tin nhân viên",
-          url: "/employeeinfo",
+          url: "/user/employeeinfo",
         },
         {
           title: "Chính sách công ty",
-          url: "/policies",
+          url: "/user/policies",
         },
         {
           title: "Lương, thưởng",
-          url: "/payment",
+          url: "/user/payment",
         },
       ],
     },
     {
       title: "Quản lí",
-      url: "/management",
-      icon: Rocket ,
+      url: "#",
+      icon: Rocket,
       items: [
         {
           title: "Quản lí dự án",
-          url: "/project-management",
+          url: "/user/project-management",
         },
         {
           title: "Assign tasks",
-          url: "/tasks-management",
+          url: "/user/tasks-management",
         },
         {
           title: "Thông báo",
-          url: "/notification",
+          url: "/user/notification",
         },
         {
           title: "Lịch",
-          url: "/calendar",
+          url: "/user/calendar",
         },
         {
           title: "Thông tin",
-          url: "/information",
+          url: "/user/information",
         },
       ],
     },
     {
       title: "Cài đặt",
-      url: "/settings",
+      url: "#",
       icon: Settings2
     },
   ],
 }
-
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
+  const { user, loading, logout } = useAuth()
+  const navData = user?.role === "admin" ? Admindata : Userdata
+
   return (
+    
     <Sidebar collapsible="icon" {...props}>
+
       <SidebarHeader>
-        <TeamSwitcher teams={data.teams} />
+        <TeamSwitcher teams={navData.teams} />
       </SidebarHeader>
       <SidebarContent>
-        <NavMain items={data.navMain} />
+        <NavMain items={navData.navMain} />
       </SidebarContent>
       <SidebarFooter>
-        <NavUser user={data.user} />
+        <NavUser user={navData.user} />
       </SidebarFooter>
       <SidebarRail />
     </Sidebar>

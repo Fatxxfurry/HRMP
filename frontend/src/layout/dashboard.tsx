@@ -8,31 +8,15 @@ import {
   SidebarTrigger,
 } from "@/components/ui/sidebar"
 import { BrowserRouter as Router, Routes, Route } from "react-router"
-import AdminTimekeeping from "@/pages/TabTimeKeeping/AdminTimekeeping"
-import AdminManagement from "@/pages/TabManagement/AdminManagement"
-import CalendarManagement from "@/pages/TabManagement/CalendarManagement"
-import AdminAssigntask from "@/pages/TabManagement/AdminAssigntask"
-import AdminNotification from "@/pages/TabManagement/AdminNotification"
-import AdminInfo from "@/pages/TabEmployee/AdminInfo"
-import AdminRequest from "@/pages/TabEmployee/AdminRequest"
-import NotificationDetail from "@/components/defined/NotificationDetail"
-import AdminPayment from "@/pages/TabEmployee/AdminPayment"
-import AddEmployee from "@/components/defined/AddEmployee"
-const mockData = {
-  senderName: "Nguyễn Văn A",
-  senderEmail: "vana@company.vn",
-  department: "Phòng Kế Toán",
-  content: "Vui lòng xem kỹ thông báo về thay đổi trong quy trình thanh toán.",
-  attachments: [
-    {
-      name: "Quy-trinh-moi.pdf",
-      url: "/files/quy-trinh-moi.pdf",
-    },
-  ],
-}
+
+import { useAuth } from "../context/AuthContext" 
+import { Outlet } from "react-router";
+
 export default function Dashboard() {
+  const { user } = useAuth()
+
+
   return (
-    <Router> 
     <SidebarProvider>
       <AppSidebar />
       <SidebarInset>
@@ -41,22 +25,11 @@ export default function Dashboard() {
             <SidebarTrigger className="-ml-1" />
             <Separator orientation="vertical" className="mr-2 h-4" />
             <AttendanceButton/>
-            
+            <span className="ml-4 font-medium">{user?.role === "admin" ? "Admin Dashboard" : "User Dashboard"}</span>
           </div>
         </header>
-        <Routes>
-              <Route path="/status" element={<AdminTimekeeping />} />
-              <Route path="/add-employee" element={<AddEmployee />} />
-              <Route path="/request" element={<AdminRequest/>} />
-              <Route path="/request-detail" element={<NotificationDetail NotificationData={mockData}/>} />
-              <Route path="/payment" element={<AdminPayment/>} />
-              <Route path="/employeeinfo" element={<AdminInfo/>} />
-              <Route path="/project-management" element={<AdminManagement/>} />
-              <Route path="/tasks-management" element={<AdminAssigntask/>} />
-              <Route path="/notification" element={<AdminNotification/>} />
-            </Routes>
+       <Outlet/>
       </SidebarInset>
     </SidebarProvider>
-     </Router>
   )
 }

@@ -1,3 +1,5 @@
+//Trang quản lí tổng quan dự án, task cho admin
+
 "use client"
 import * as React from "react"
 import { useState } from "react";
@@ -189,15 +191,8 @@ export default function AdminTimekeeping() {
                                             <TableCell>{project.date}</TableCell>
                                             <TableCell>{project.deadline}</TableCell>
                                             <TableCell>
-                                                <Select >
-                                                    <SelectTrigger className="w-[120px]">
-                                                        <SelectValue />
-                                                    </SelectTrigger>
-                                                    <SelectContent>
-                                                        <SelectItem value="finished">Hoàn thành</SelectItem>
-                                                        <SelectItem value="unfinished">Đang thực hiện</SelectItem>
-                                                    </SelectContent>
-                                                </Select>
+                                                
+                                            {project.status}
 
                                             </TableCell>
 
