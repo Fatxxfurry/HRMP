@@ -1,3 +1,5 @@
+//Trang Admin Payment chứa thông tin về tình trạng lương, thưởng của các nhân viên 
+
 import React, { useState } from 'react'
 import {
     Table,

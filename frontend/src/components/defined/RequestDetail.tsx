@@ -1,4 +1,4 @@
-import React from "react"
+import React, {useState} from "react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Separator } from "@/components/ui/separator"
@@ -8,6 +8,7 @@ type Attachment = {
   name: string
   url: string
 }
+var attachments: Attachment[] = []
 
 export interface NotificationDetailProps {
   NotificationData: {
@@ -18,17 +19,19 @@ export interface NotificationDetailProps {
     attachments: Attachment[]
   }
 }
-var attachments: Attachment[] = []
 
-export default function NotificationDetail() {
+export default function RequestDetail() {
 
+  const [status, setStatus] = useState<"pending" | "accepted" | "rejected">("pending")
 
+  const handleAccept = () => setStatus("accepted")
+  const handleReject = () => setStatus("rejected")
+    return (
 
-  return (
     <div className="flex flex-1 flex-col gap-4 p-4 pt-0">
         <Card>
           <CardHeader>
-            <CardTitle>Chi tiết thông báo</CardTitle>
+            <CardTitle>Chi tiết yêu cầu</CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
             <div>
@@ -47,7 +50,7 @@ export default function NotificationDetail() {
 
             <div>
               <p className="text-sm text-muted-foreground">Phòng ban</p>
-              <p className="text-base">Phòng iT</p>
+              <p className="text-base">Phòng IT</p>
             </div>
 
             <Separator />
@@ -57,6 +60,17 @@ export default function NotificationDetail() {
               <p className="text-base whitespace-pre-line">abcxyz</p>
             </div>
 
+            <Separator />
+            <div>
+            <p className="text-sm text-muted-foreground">Trạng thái</p>
+            <p className="text-base font-medium">
+              {status === "pending"
+                ? "Chưa xử lý"
+                : status === "accepted"
+                ? "Đã chấp nhận"
+                : "Đã từ chối"}
+            </p>
+          </div>
             <Separator />
 
             <div>
@@ -87,6 +101,16 @@ export default function NotificationDetail() {
                 <p className="text-muted-foreground text-sm">Không có file đính kèm.</p>
               )}
             </div>
+            {status === "pending" && (
+            <div className="flex gap-4 pt-4">
+              <Button onClick={handleAccept} className="bg-green-600 hover:bg-green-700">
+                Chấp nhận
+              </Button>
+              <Button onClick={handleReject} variant="destructive">
+                Từ chối
+              </Button>
+            </div>
+          )}
           </CardContent>
         </Card>
     </div>

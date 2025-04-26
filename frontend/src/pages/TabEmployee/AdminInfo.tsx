@@ -1,3 +1,5 @@
+//Trang AdminInfo: Chứa thông tin tổng quan cho Admin
+
 import { useState } from "react"
 import { Button } from "@/components/ui/button"
 import {
@@ -42,6 +44,7 @@ import { useForm } from "react-hook-form"
 import { z } from "zod"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { Link } from "react-router"
+import { useNavigate } from "react-router"
 const employeedata = [
     { id: "NV001", name: "Nguyễn Văn A", phone: "0123456789", dob: "1/1/2024", email: "edmgvn@gmail.com", address: "Thủ Đức, TPHCM", department: "IT", position: "Dev" },
     { id: "NV002", name: "Nguyễn Văn B", phone: "0123456789", dob: "1/1/2024", email: "edmgvn@gmail.com", address: "Thủ Đức, TPHCM", department: "HR", position: "HR" },
@@ -66,7 +69,11 @@ export default function AdminInfo() {
     const [deleteEmployeeId, setdeleteEmployeeId] = useState<string | null>(null)
     const [showEditDialog, setShowEditDialog] = useState(false)
     const [showDeleteDialog, setShowDeleteDialog] = useState(false)
+    const navigate = useNavigate()
 
+    const handleClickTable = () => {
+        navigate('/admin/employee-detail')
+      }
     function handleEdit(employee: typeof employeedata[0]) {
         seteditEmployee(employee)
         setShowEditDialog(true)
@@ -187,7 +194,7 @@ export default function AdminInfo() {
                         <TableBody>
                             {filteredData.length > 0 ? (
                                 filteredData.map((employee) => (
-                                    <TableRow key={employee.id}>
+                                    <TableRow key={employee.id} onClick={() => handleClickTable()}>
                                         <TableCell className="font-medium">{employee.id}</TableCell>
                                         <TableCell>{employee.name}</TableCell>
                                         <TableCell>{employee.phone}</TableCell>
