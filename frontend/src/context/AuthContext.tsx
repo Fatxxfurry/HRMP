@@ -60,7 +60,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
       const mockUsers = {
         "admin": {
-          id: "1",
+          id: "1", 
           name: "Admin User",
           username: "admin",
           
