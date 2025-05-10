@@ -125,7 +125,7 @@ export default function AdminPayment() {
                      
                             <div>
                                 <Label htmlFor="Reason">Lương mới</Label>
-                                <Input type="text" id="Reason" placeholder="Lí do" />
+                                <Input type="text" id="Reason" placeholder="Lương mới" />
                             </div>
                             <Button >
                                 Xác nhận
