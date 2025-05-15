@@ -5,7 +5,9 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.example.rest.model.Employee;
 import com.example.rest.model.Meeting;
+import com.example.rest.repository.EmployeeRepository;
 import com.example.rest.repository.MeetingRepository;
 import com.example.rest.service.MeetingService;
 
@@ -13,9 +15,11 @@ import com.example.rest.service.MeetingService;
 public class MeetingServiceImpl implements MeetingService {
 
     private final MeetingRepository meetingRepository;
+    private final EmployeeRepository employeeRepository;
 
     @Autowired
-    public MeetingServiceImpl(MeetingRepository meetingRepository) {
+    public MeetingServiceImpl(MeetingRepository meetingRepository, EmployeeRepository employeeRepository) {
+        this.employeeRepository = employeeRepository;
         this.meetingRepository = meetingRepository;
     }
 
@@ -31,6 +35,8 @@ public class MeetingServiceImpl implements MeetingService {
 
     @Override
     public Meeting createMeeting(Meeting meeting) {
+        meeting.setEmployee(employeeRepository.findById(meeting.getEmployee().getId()).orElse(null));
+        meeting.setManager(employeeRepository.findById(meeting.getManager().getId()).orElse(null));
         return meetingRepository.save(meeting);
     }
 
@@ -48,6 +54,14 @@ public class MeetingServiceImpl implements MeetingService {
         }
         if (meeting.getDate() != null) {
             existingMeeting.setDate(meeting.getDate());
+        }
+        if (meeting.getEmployee() != null) {
+            Employee employee = employeeRepository.findById(meeting.getEmployee().getId()).orElse(null);
+            existingMeeting.setEmployee(employee);
+        }
+        if (meeting.getManager() != null) {
+            Employee manager = employeeRepository.findById(meeting.getManager().getId()).orElse(null);
+            existingMeeting.setManager(manager);
         }
         return meetingRepository.save(existingMeeting);
     }

@@ -1,6 +1,4 @@
 package com.example.rest.model;
-import com.fasterxml.jackson.annotation.JsonIgnore;
-
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -23,7 +21,6 @@ public class Department {
     
     @ManyToOne
     @JoinColumn(name = "manager_id", referencedColumnName = "id")
-    @JsonIgnore
     private Employee employee;
 
     public Long getManagerId() {

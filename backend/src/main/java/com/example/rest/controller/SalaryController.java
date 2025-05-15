@@ -18,7 +18,7 @@ import com.example.rest.model.Salary;
 import com.example.rest.service.SalaryService;
 
 @RestController
-@RequestMapping("/api/v1/salaries")
+@RequestMapping("/api/salaries")
 public class SalaryController {
     
     private final SalaryService salaryService;
