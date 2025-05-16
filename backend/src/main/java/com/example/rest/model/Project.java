@@ -8,7 +8,6 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
-import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import lombok.Data;
 
@@ -24,7 +23,7 @@ public class Project {
     LocalDate start_date;
     LocalDate end_date;
 
-    @OneToOne
+    @ManyToOne
     @JoinColumn(name = "involeded_departments_id",referencedColumnName="id")
     Department involededDepartments;
 

@@ -20,7 +20,7 @@ import com.example.rest.service.SalaryService;
 
 @RestController
 @CrossOrigin
-@RequestMapping("/api/v1/salaries")
+@RequestMapping("/api/salaries")
 public class SalaryController {
     
     private final SalaryService salaryService;
