@@ -61,7 +61,7 @@ public class Employee {
     
     
     private LocalDate birth_date;
-
+    private String position;
     
     private LocalDate hire_date;
 
