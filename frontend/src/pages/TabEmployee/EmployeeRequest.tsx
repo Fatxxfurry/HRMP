@@ -80,7 +80,7 @@ export default function EmployeeRequest() {
                             name="todepartment"
                             render={({ field }) => (
                                 <FormItem>
-                                    <FormLabel>Mã nhân viên nhận</FormLabel>
+                                    <FormLabel>Phòng ban nhận</FormLabel>
                                     <FormControl>
                                         <Input placeholder="Nhập phòng ban nhận" {...field} />
                                     </FormControl>

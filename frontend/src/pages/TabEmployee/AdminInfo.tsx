@@ -73,7 +73,7 @@ export default function AdminInfo() {
 
     const handleClickTable = () => {
         navigate('/admin/employee-detail')
-      }
+    }
     function handleEdit(employee: typeof employeedata[0]) {
         seteditEmployee(employee)
         setShowEditDialog(true)
@@ -204,7 +204,10 @@ export default function AdminInfo() {
                                         <TableCell>{employee.department}</TableCell>
                                         <TableCell>{employee.position}</TableCell>
                                         <TableCell className="space-x-2">
-                                            <Button variant="outline" size="sm" onClick={() => handleEdit(employee)}>
+                                            <Button variant="outline" size="sm" onClick={(event) => {
+                                                event.stopPropagation(); // Ngăn sự kiện click lan lên TableRow
+                                                handleEdit(employee);    // Gọi logic sửa
+                                            }}>
                                                 Sửa
                                             </Button>
                                             <Dialog open={showEditDialog} onOpenChange={setShowEditDialog}>
@@ -303,12 +306,12 @@ export default function AdminInfo() {
                     </Table>
 
                 </ScrollArea>
-                <Link to='/add-employee'> 
-                <Button variant="outline" size="sm" >
-                    Thêm nhân viên
-                </Button>
+                <Link to='/admin/add-employee'>
+                    <Button variant="outline" size="sm" >
+                        Thêm nhân viên
+                    </Button>
                 </Link>
-            
+
             </div>
         </div>
     )
