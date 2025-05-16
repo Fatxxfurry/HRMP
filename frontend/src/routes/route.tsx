@@ -89,6 +89,7 @@ const router = createBrowserRouter([
           },
           {
             path: "add-employee",
+            element: <AddEmployee />,
             
           }
         ],

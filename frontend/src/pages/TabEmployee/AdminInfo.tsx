@@ -45,44 +45,85 @@ import { z } from "zod"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { Link } from "react-router"
 import { useNavigate } from "react-router"
-const employeedata = [
-    { id: "NV001", name: "Nguyễn Văn A", phone: "0123456789", dob: "1/1/2024", email: "edmgvn@gmail.com", address: "Thủ Đức, TPHCM", department: "IT", position: "Dev" },
-    { id: "NV002", name: "Nguyễn Văn B", phone: "0123456789", dob: "1/1/2024", email: "edmgvn@gmail.com", address: "Thủ Đức, TPHCM", department: "HR", position: "HR" },
-    { id: "CEO003", name: "Nguyễn Văn C", phone: "0123456789", dob: "1/1/2024", email: "edmgvn@gmail.com", address: "Thủ Đức, TPHCM", department: "BUS", position: "CEO" },
-]
+import axios from "axios"
+import { useEffect } from "react"
+import { useAuth } from "@/context/AuthContext"
 const formSchema = z.object({
     id: z.string(),
     name: z.string(),
     phone: z.string(),
-    dob: z.coerce.date(),
+    birth_date: z.string(),
     email: z.string(),
     address: z.string(),
     department: z.string(),
     position: z.string()
 })
-
+interface Department {
+    id: number,
+    name: string,
+    managerId: number
+}
+interface Employee {
+    id: number,
+    name: string,
+    age: number,
+    phone: string,
+    birth_date: string,
+    hire_date: string,
+    email: string,
+    address: string,
+    department: Department,
+    position: string,
+    identification: string,
+    role: string,
+}
 export default function AdminInfo() {
     const [nameFilter, setNameFilter] = useState("")
     const [departmentFilter, setDepartmentFilter] = useState("")
     const [positionFilter, setPositionFilter] = useState("")
-    const [editEmployee, seteditEmployee] = useState<typeof employeedata[0] | null>(null)
-    const [deleteEmployeeId, setdeleteEmployeeId] = useState<string | null>(null)
+    const [editEmployee, seteditEmployee] = useState<Employee | null>(null);
+    const [deleteEmployeeId, setdeleteEmployeeId] = useState<Employee | null>(null);
     const [showEditDialog, setShowEditDialog] = useState(false)
     const [showDeleteDialog, setShowDeleteDialog] = useState(false)
+    const [employeeInfo, setEmployeeInfo] = useState<Employee[]>([]);
+    const { user } = useAuth()
     const navigate = useNavigate()
 
+
+    useEffect(() => {
+        loadEmployee();
+    }, [user]);
+    const loadEmployee = async () => {
+        try {
+            const response = await axios.get("http://localhost:8080/api/employees");
+            const data: Employee[] = response.data;
+            setEmployeeInfo(data);
+        } catch (error) {
+            console.error("Lỗi khi lấy danh sách nhân viên:", error);
+        }
+    };
     const handleClickTable = () => {
         navigate('/admin/employee-detail')
     }
-    function handleEdit(employee: typeof employeedata[0]) {
-        seteditEmployee(employee)
-        setShowEditDialog(true)
-    }
+    const handleEdit = (employee: Employee) => {
+        seteditEmployee(employee);
+        setShowEditDialog(true);
+        form.reset({
+            id: employee.id.toString(),
+            name: employee?.name,
+            phone: employee.phone,
+            birth_date: employee.birth_date,
+            email: employee.email,
+            address: employee.address,
+            department: employee.department?.name,
+            position: employee.position,
+        });
+    };
 
-    function handleDelete(id: string) {
-        setdeleteEmployeeId(id)
-        setShowDeleteDialog(true)
-    }
+    const handleDelete = (employee: Employee) => {
+        setdeleteEmployeeId(employee);
+        setShowDeleteDialog(true);
+    };
     function handleAdd() {
 
     }
@@ -92,29 +133,31 @@ export default function AdminInfo() {
             id: "",
             name: "",
             phone: "",
-            dob: new Date(),
+            birth_date: "",
             email: "",
             address: "",
             department: "",
             position: ""
         },
     })
-    function onSubmit(values: z.infer<typeof formSchema>) {
-
-        console.log(values)
-    }
+    const onSubmit = (values: z.infer<typeof formSchema>) => {
+        console.log("Submit:", values);
+        // TODO: Gọi API cập nhật
+        setShowEditDialog(false);
+    };
     // Get unique departments and positions for filter dropdowns
-    const departments = [...new Set(employeedata.map((emp) => emp.department))]
-    const positions = [...new Set(employeedata.map((emp) => emp.position))]
+
+    const departments = [...new Set(employeeInfo.map((emp) => emp.department?.name))];
+    const positions = [...new Set(employeeInfo.map((emp) => emp.position))];
+
 
     // Filter the data based on current filter values
-    const filteredData = employeedata.filter((employee) => {
-        const nameMatch = employee.name.toLowerCase().includes(nameFilter.toLowerCase())
-        const departmentMatch = !departmentFilter || employee.department === departmentFilter
-        const positionMatch = !positionFilter || employee.position === positionFilter
-
-        return nameMatch && departmentMatch && positionMatch
-    })
+    const filteredData = employeeInfo.filter((employee) => {
+        const nameMatch = employee.name.toLowerCase().includes(nameFilter.toLowerCase());
+        const departmentMatch = !departmentFilter || employee.department?.name === departmentFilter;
+        const positionMatch = !positionFilter || employee.position === positionFilter;
+        return nameMatch && departmentMatch && positionMatch;
+    });
     const clearFilters = () => {
         setNameFilter("")
         setDepartmentFilter("")
@@ -124,7 +167,7 @@ export default function AdminInfo() {
 
         <div className="flex flex-1 flex-col gap-4 p-4 pt-0">
             <div className="min-h-[100vh] flex-1 rounded-xl bg-muted/50 md:min-h-min" >
-                <ScrollArea className="h-[250px] rounded-md border p-4">
+                <ScrollArea className="rounded-md border p-4">
                     <div className="flex flex-row gap-4  mb-2">
                         <div className="space-y-2">
                             <Input
@@ -194,14 +237,14 @@ export default function AdminInfo() {
                         <TableBody>
                             {filteredData.length > 0 ? (
                                 filteredData.map((employee) => (
-                                    <TableRow key={employee.id} onClick={() => handleClickTable()}>
+                                    <TableRow key={employee.id}>
                                         <TableCell className="font-medium">{employee.id}</TableCell>
-                                        <TableCell>{employee.name}</TableCell>
+                                        <TableCell>{employee?.name}</TableCell>
                                         <TableCell>{employee.phone}</TableCell>
-                                        <TableCell>{employee.dob}</TableCell>
+                                        <TableCell>{employee.birth_date}</TableCell>
                                         <TableCell>{employee.email}</TableCell>
                                         <TableCell>{employee.address}</TableCell>
-                                        <TableCell>{employee.department}</TableCell>
+                                        <TableCell>{employee.department?.name}</TableCell>
                                         <TableCell>{employee.position}</TableCell>
                                         <TableCell className="space-x-2">
                                             <Button variant="outline" size="sm" onClick={(event) => {
@@ -234,8 +277,8 @@ export default function AdminInfo() {
                                                                     placeholder="Số điện thoại"
                                                                 />
                                                                 <Input
-                                                                    defaultValue={editEmployee.dob}
-                                                                    {...form.register("dob")}
+                                                                    defaultValue={editEmployee.birth_date}
+                                                                    {...form.register("birth_date")}
                                                                     placeholder="Ngày sinh"
                                                                 />
                                                                 <Input
@@ -249,7 +292,7 @@ export default function AdminInfo() {
                                                                     placeholder="Địa chỉ"
                                                                 />
                                                                 <Input
-                                                                    defaultValue={editEmployee.department}
+                                                                    defaultValue={editEmployee.department.name}
                                                                     {...form.register("department")}
                                                                     placeholder="Phòng ban"
                                                                 />
@@ -265,8 +308,11 @@ export default function AdminInfo() {
                                                     )}
                                                 </DialogContent>
                                             </Dialog>
-                                            <Button variant="destructive" size="sm" onClick={() => handleDelete(employee.id)}>
+                                            <Button variant="destructive" size="sm" onClick={() => handleDelete(employee)}>
                                                 Xóa
+                                            </Button>
+                                            <Button variant="outline" size="sm"onClick={() => handleClickTable()}>
+                                                Xem
                                             </Button>
                                             <Dialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
                                                 <DialogContent>
