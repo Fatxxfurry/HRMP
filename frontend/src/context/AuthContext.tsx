@@ -1,11 +1,11 @@
 "use client"
 // Login Context đơn giản, tên đăng nhập admin = quyền admin và ngược lại
 import { createContext, useContext, useState, useEffect, type ReactNode } from "react"
-
+import axios from "axios"
 // Define user type with role
 type User = {
-  id: string
-  name: string
+  id: number
+  name?: string
   username: string
   role: "admin" | "user"
 }
@@ -22,8 +22,8 @@ type AuthContextType = {
 const AuthContext = createContext<AuthContextType>({
   user: null,
   loading: true,
-  login: async () => {},
-  logout: () => {},
+  login: async () => { },
+  logout: () => { },
 })
 
 // Auth provider component
@@ -33,23 +33,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   // Check for existing session on mount
   useEffect(() => {
-    // Simulate fetching user from storage or API
-    const checkAuth = async () => {
-      try {
-        // In a real app, fetch the user from an API or local storage
-        const storedUser = localStorage.getItem("user")
-
-        if (storedUser) {
-          setUser(JSON.parse(storedUser))
-        }
-      } catch (error) {
-        console.error("Authentication error:", error)
-      } finally {
-        setLoading(false)
-      }
+    const storedUser = localStorage.getItem("user")
+    if (storedUser) {
+      setUser(JSON.parse(storedUser))
     }
-
-    checkAuth()
+    setLoading(false)
   }, [])
 
   // Login function
@@ -58,48 +46,49 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
     try {
 
-      const mockUsers = {
-        "admin": {
-          id: "1", 
-          name: "Admin User",
-          username: "admin",
-          
-          role: "admin",
-        },
-        "user": {
-          id: "2",
-          name: "Regular User",
-          username: "user",
-          role: "user",
-        },
-      }
-
       // Check if user exists
-      const foundUser = mockUsers[username as keyof typeof mockUsers]
+      const response = await axios.post("http://localhost:8080/api/login", {
+        username,
+        password,
+      })
 
-      if (!foundUser) {
-        throw new Error("User not found")
+      const data = response.data
+      const loggedInUser = {
+        id: data.id,
+        name: data.name,
+        username: data.username,
+        role: data.role,
       }
-
+      console.log("Logged in user:", loggedInUser)
+      if(loggedInUser.role === "ROLE_MANAGER") {
+        loggedInUser.role = "admin"
+      } else if(loggedInUser.role === "ROLE_USER") {
+        loggedInUser.role = "user"
+      }
+      
 
       // Set user in state and localStorage
-      setUser(foundUser as User)
-      localStorage.setItem("user", JSON.stringify(foundUser))
-    } catch (error) {
+      setUser(loggedInUser)
+      localStorage.setItem("user", JSON.stringify(loggedInUser))
+    } catch (error: any) {
       console.error("Login error:", error)
+      if (axios.isAxiosError(error)) {
+        console.error("API Error response:", error.response?.data)
+      }
       throw error
-    } finally {
-      setLoading(false)
-    }
+  } finally {
+    setLoading(false)
   }
+}
 
-  // Logout function
-  const logout = () => {
-    setUser(null)
-    localStorage.removeItem("user")
-  }
 
-  return <AuthContext.Provider value={{ user, loading, login, logout }}>{children}</AuthContext.Provider>
+// Logout function
+const logout = () => {
+  setUser(null)
+  localStorage.removeItem("user")
+}
+
+return <AuthContext.Provider value={{ user, loading, login, logout }}>{children}</AuthContext.Provider>
 }
 
 // Custom hook to use auth context

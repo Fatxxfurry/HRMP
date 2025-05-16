@@ -30,7 +30,6 @@ export default function Login() {
       setError("Invalid credentials. Please try again.")
     } finally {
       setIsLoading(false)
-
     }
   }
   useEffect(() => {
@@ -60,7 +59,7 @@ export default function Login() {
                 type="text"
                 value={username}
                 onChange={(e) => setUsername(e.target.value)}
-                placeholder="basic username: admin/user"
+                placeholder="username"
                 required
               />
             </div>
