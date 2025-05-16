@@ -39,6 +39,10 @@ import {
 } from "@/components/ui/select"
 
 import { Button } from "@/components/ui/button"
+import { useEffect } from "react"
+import { useAuth } from "@/context/AuthContext"
+import axios from "axios"
+import { stat } from "fs"
 const chartConfig = {
     active: {
         label: "Active",
@@ -59,10 +63,7 @@ const ProjectCompletionchartConfig = {
         color: "hsl(var(--chart-2))",
     }
 } satisfies ChartConfig
-const TaskCompletionData = [
-    { status: "finished", number: 70, fill: "hsl(var(--chart-2))" },
-    { status: "unfinished", number: 30, fill: "hsl(var(--chart-3))" },
-]
+
 const projects = [
     {
         name: "Dự án A",
@@ -84,16 +85,96 @@ const TaskProjectdata = [
     { id: "2", name: "Delete database", projectname: "Website cho FPT", date: "1/1/2024", deadline: "1/1/2025", status: "Đang thực hiện" },
     { id: "3", name: "Sell data", projectname: "Website cho FPT", date: "1/1/2024", deadline: "1/1/2025", status: "Đang thực hiện" },
 ]
+interface Employee {
+    id: number
+    name: string
+    email: string
+    // bạn có thể thêm các trường khác nếu cần
+}
+
+interface Task {
+    id: number
+    name: string
+    description: string
+    employee: Employee | null
+    project: Project
+    start_date: string | null
+    end_date: string | null
+    finished: boolean
+}
+interface Project {
+    id: number,
+    name: string,
+    finished: boolean,
+    start_date: Date,
+    end_date: Date,
+}
 export default function EmployeeManagement() {
     const [selectedProject, setSelectedProject] = useState(projects[0]);
     const [showEditDialog, setShowEditDialog] = useState(false)
+    const [employeeTaskInfo, setEmployeeTaskInfo] = useState<Task[]>([])
+    const [status, setStatus] = useState('')
+    const [selectedTask, setSelectedTask] = useState<Task | null>(null)
+
+
+    const { user } = useAuth()
+    useEffect(() => {
+        loadEmployeeTaskInfo()
+    }, [user])
+    const loadEmployeeTaskInfo = async () => {
+        try {
+            const response = await axios.get(`http://localhost:8080/api/tasks`)
+            if (!response) {
+                throw new Error('Failed to fetch employee task info')
+            }
+            const data: Task[] = response.data
+            const filteredTasks = data.filter(task => task.employee?.id === user?.id)
+
+            setEmployeeTaskInfo(filteredTasks)
+        } catch (error) {
+            console.error('Error fetching employee task info:', error)
+        }
+
+    }
+    const handleUpdateStatus = (value: string) => {
+        if (!selectedTask?.id) {
+            console.error("No selected task to update.")
+            return
+        }
+
+        axios.put(`http://localhost:8080/api/tasks/${selectedTask.id}`, {
+            finished: value === 'finished',
+        })
+            .then(response => {
+                console.log('Task updated successfully:', response.data)
+                setShowEditDialog(false)
+            })
+            .catch(error => {
+                console.error('Error updating task:', error)
+            })
+    }
+
+
     const handleSelectChange = (value: string) => {
         const project = projects.find(p => p.name === value);
         if (project) setSelectedProject(project);
     };
-    function handleEdit() {
-        setShowEditDialog(true)
+    const getTaskCompletionData = (tasks: Task[]) => {
+        const finished = tasks.filter(task => task.finished).length
+        const unfinished = tasks.length - finished
+        return [
+            { status: "finished", number: finished, fill: "hsl(var(--chart-2))" },
+            { status: "unfinished", number: unfinished, fill: "hsl(var(--chart-3))" },
+        ]
     }
+    const TaskCompletionData = employeeTaskInfo
+        ? getTaskCompletionData(employeeTaskInfo)
+        : [
+            { status: "finished", number: 0, fill: "hsl(var(--chart-2))" },
+            { status: "unfinished", number: 0, fill: "hsl(var(--chart-3))" },
+        ]
+
+
     return (
         <div className="flex flex-1 flex-col gap-4 p-4 pt-0">
             <div className="grid auto-rows-min gap-4 md:grid-cols-2">
@@ -157,7 +238,7 @@ export default function EmployeeManagement() {
             <div className="min-h-[100vh] flex-1 rounded-xl bg-muted/50 md:min-h-min" >
                 <ScrollArea className="h-[250px] rounded-md border p-4">
                     <Table >
-                        <TableCaption>Danh sách task của nhân viên NV001.</TableCaption>
+                        <TableCaption>Danh sách task của nhân viên {user?.id}.</TableCaption>
                         <TableHeader>
                             <TableRow>
                                 <TableHead >Mã Task</TableHead>
@@ -170,19 +251,25 @@ export default function EmployeeManagement() {
                             </TableRow>
                         </TableHeader>
                         <TableBody>
-                            {TaskProjectdata.length > 0 ? (
-                                TaskProjectdata.map((task) => (
+                            {employeeTaskInfo && employeeTaskInfo.length > 0 ? (
+                                employeeTaskInfo.map((task: Task) => (
                                     <TableRow key={task.id}>
                                         <TableCell className="font-medium">{task.id}</TableCell>
                                         <TableCell>{task.name}</TableCell>
-                                        <TableCell>{task.projectname}</TableCell>
-                                        <TableCell>{task.date}</TableCell>
-                                        <TableCell>{task.deadline}</TableCell>
+                                        <TableCell>{task.project.name}</TableCell>
+                                        <TableCell>{task.start_date}</TableCell>
+                                        <TableCell>{task.end_date}</TableCell>
                                         <TableCell>
-                                            {task.status}
+                                            {task.finished ? 'Đã hoàn thành' : 'Chưa hoàn thành'}
                                         </TableCell>
                                         <TableCell>
-                                            <Button variant="outline" size="sm" onClick={() => handleEdit()}>
+                                            <Button
+                                                variant="outline"
+                                                onClick={() => {
+                                                    setSelectedTask(task);        // ✅ Lưu task đang chọn
+                                                    setShowEditDialog(true);     // ✅ Hiển thị Dialog chỉnh sửa
+                                                }}
+                                            >
                                                 Cập nhật
                                             </Button>
                                             <Dialog open={showEditDialog} onOpenChange={setShowEditDialog}>
@@ -194,7 +281,7 @@ export default function EmployeeManagement() {
                                                         </DialogDescription>
                                                     </DialogHeader>
                                                     <div className="flex justify-center mt-4">
-                                                        <Select >
+                                                        <Select onValueChange={(value) => setStatus(value)}>
                                                             <SelectTrigger className="w-[150px]">
                                                                 <SelectValue />
                                                             </SelectTrigger>
@@ -212,7 +299,7 @@ export default function EmployeeManagement() {
                                                         <Button
                                                             variant="destructive"
                                                             onClick={() => {
-                                                                setShowEditDialog(false)
+                                                                handleUpdateStatus(status)
                                                             }}
                                                         >
                                                             Cập nhật
