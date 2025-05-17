@@ -23,6 +23,7 @@ import Policies from "@/pages/TabEmployee/Policies";
 import EmployeeManagement from "@/pages/TabManagement/EmployeeManagement";
 import EmployeeNotification from "@/pages/TabManagement/EmployeeNotification";
 import Unauthorized from "@/components/defined/Unauthorized";
+import AdminEmployeeInfo from "@/pages/TabEmployee/AdminEmployeeInfo";
 const router = createBrowserRouter([
   {
     path: "/",
@@ -56,8 +57,8 @@ const router = createBrowserRouter([
             element: <AdminInfo />,
           },
           {
-            path: "employee-detail",
-            element: <EmployeeInfo />,
+            path: "employee-detail/:id",
+            element: <AdminEmployeeInfo />,
           },
           {
             path: "policies",
