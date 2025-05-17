@@ -102,9 +102,9 @@ export default function AdminInfo() {
             console.error("Lỗi khi lấy danh sách nhân viên:", error);
         }
     };
-    const handleClickTable = () => {
-        navigate('/admin/employee-detail')
-    }
+    const handleClickTable = (id: number) => {
+        navigate(`/admin/employee-detail/${id}`);
+    };
     const handleEdit = (employee: Employee) => {
         seteditEmployee(employee);
         setShowEditDialog(true);
@@ -123,6 +123,19 @@ export default function AdminInfo() {
     const handleDelete = (employee: Employee) => {
         setdeleteEmployeeId(employee);
         setShowDeleteDialog(true);
+    };
+    const confirmDelete = async () => {
+        try {
+            if (deleteEmployeeId) {
+                await axios.delete(`http://localhost:8080/api/employees/${deleteEmployeeId.id}`);
+                // Xóa khỏi UI sau khi xóa backend thành công
+                setEmployeeInfo((prev) => prev.filter((e) => e.id !== deleteEmployeeId.id));
+                setShowDeleteDialog(false);
+                setdeleteEmployeeId(null);
+            }
+        } catch (error) {
+            console.error("Lỗi khi xóa nhân viên:", error);
+        }
     };
     function handleAdd() {
 
@@ -311,7 +324,7 @@ export default function AdminInfo() {
                                             <Button variant="destructive" size="sm" onClick={() => handleDelete(employee)}>
                                                 Xóa
                                             </Button>
-                                            <Button variant="outline" size="sm"onClick={() => handleClickTable()}>
+                                            <Button variant="outline" size="sm" onClick={() => handleClickTable(employee.id)}>
                                                 Xem
                                             </Button>
                                             <Dialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
@@ -328,10 +341,7 @@ export default function AdminInfo() {
                                                         </Button>
                                                         <Button
                                                             variant="destructive"
-                                                            onClick={() => {
-                                                                console.log("Xoá task ID:", deleteEmployeeId)
-                                                                setShowDeleteDialog(false)
-                                                            }}
+                                                            onClick={confirmDelete}
                                                         >
                                                             Xoá
                                                         </Button>
