@@ -48,7 +48,9 @@ public class ProjectServiceImpl implements ProjectService {
         if(project.isFinished() != existingProject.isFinished()) existingProject.setFinished(project.isFinished());
         if(project.getStart_date() != null) existingProject.setStart_date(project.getStart_date());
         if(project.getEnd_date() != null) existingProject.setEnd_date(project.getEnd_date());
-        if(project.getInvolededDepartments() != null) existingProject.setInvolededDepartments(departmentRepository.findById(project.getInvolededDepartments().getId()).orElse(null));
+        if (project.getInvolededDepartments() != null)
+            existingProject.setInvolededDepartments(
+                    departmentRepository.findById(project.getInvolededDepartments().getId()).orElse(null));
         return projectRepository.save(existingProject);
     }
     

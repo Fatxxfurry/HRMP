@@ -36,8 +36,11 @@ public class SalaryServiceImpl implements SalaryService {
         if(existingSalary == null) {
             return null;
         }
-        if(salary.getBasic_salary() != null) {
+        if (salary.getBasic_salary() != null) {
             existingSalary.setBasic_salary(salary.getBasic_salary());
+        }
+        if (salary.getDate_paid() != null) {
+            existingSalary.setDate_paid(salary.getDate_paid());
         }
         if(salary.getBonus() != null) {
             existingSalary.setBonus(salary.getBonus());
