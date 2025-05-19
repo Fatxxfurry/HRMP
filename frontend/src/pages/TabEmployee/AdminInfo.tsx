@@ -48,16 +48,16 @@ import { useNavigate } from "react-router"
 import axios from "axios"
 import { useEffect } from "react"
 import { useAuth } from "@/context/AuthContext"
-const formSchema = z.object({
+{/*const formSchema = z.object({
     id: z.string(),
     name: z.string(),
     phone: z.string(),
     birth_date: z.string(),
     email: z.string(),
     address: z.string(),
-    department: z.string(),
-    position: z.string()
-})
+    position: z.string(),
+    identification: z.string(),
+})*/}
 interface Department {
     id: number,
     name: string,
@@ -92,6 +92,7 @@ export default function AdminInfo() {
 
     useEffect(() => {
         loadEmployee();
+
     }, [user]);
     const loadEmployee = async () => {
         try {
@@ -102,23 +103,16 @@ export default function AdminInfo() {
             console.error("Lỗi khi lấy danh sách nhân viên:", error);
         }
     };
+
+
     const handleClickTable = (id: number) => {
         navigate(`/admin/employee-detail/${id}`);
     };
-    const handleEdit = (employee: Employee) => {
-        seteditEmployee(employee);
-        setShowEditDialog(true);
-        form.reset({
-            id: employee.id.toString(),
-            name: employee?.name,
-            phone: employee.phone,
-            birth_date: employee.birth_date,
-            email: employee.email,
-            address: employee.address,
-            department: employee.department?.name,
-            position: employee.position,
-        });
+    const handleEdit = (id: number) => {
+        navigate(`/admin/edit-employee/${id}`);
+
     };
+
 
     const handleDelete = (employee: Employee) => {
         setdeleteEmployeeId(employee);
@@ -140,24 +134,20 @@ export default function AdminInfo() {
     function handleAdd() {
 
     }
-    const form = useForm<z.infer<typeof formSchema>>({
-        resolver: zodResolver(formSchema),
+    const form = useForm({
         defaultValues: {
-            id: "",
+            id: 999,
             name: "",
             phone: "",
             birth_date: "",
             email: "",
             address: "",
-            department: "",
-            position: ""
+            position: "",
+            identification: "",
         },
     })
-    const onSubmit = (values: z.infer<typeof formSchema>) => {
-        console.log("Submit:", values);
-        // TODO: Gọi API cập nhật
-        setShowEditDialog(false);
-    };
+
+
     // Get unique departments and positions for filter dropdowns
 
     const departments = [...new Set(employeeInfo.map((emp) => emp.department?.name))];
@@ -241,10 +231,10 @@ export default function AdminInfo() {
                                 <TableHead>Ngày sinh</TableHead>
                                 <TableHead >Email</TableHead>
                                 <TableHead >Địa chỉ</TableHead>
+                                <TableHead >Ngày gia nhập</TableHead>
                                 <TableHead >Phòng ban</TableHead>
                                 <TableHead >Vị trí</TableHead>
                                 <TableHead >Thao tác</TableHead>
-
                             </TableRow>
                         </TableHeader>
                         <TableBody>
@@ -257,70 +247,17 @@ export default function AdminInfo() {
                                         <TableCell>{employee.birth_date}</TableCell>
                                         <TableCell>{employee.email}</TableCell>
                                         <TableCell>{employee.address}</TableCell>
+                                        <TableCell>{employee.hire_date}</TableCell>
                                         <TableCell>{employee.department?.name}</TableCell>
                                         <TableCell>{employee.position}</TableCell>
                                         <TableCell className="space-x-2">
                                             <Button variant="outline" size="sm" onClick={(event) => {
                                                 event.stopPropagation(); // Ngăn sự kiện click lan lên TableRow
-                                                handleEdit(employee);    // Gọi logic sửa
+                                                handleEdit(employee.id);    // Gọi logic sửa
                                             }}>
                                                 Sửa
                                             </Button>
-                                            <Dialog open={showEditDialog} onOpenChange={setShowEditDialog}>
-                                                <DialogContent>
-                                                    <DialogHeader>
-                                                        <DialogTitle>Sửa Task</DialogTitle>
-                                                    </DialogHeader>
-                                                    {editEmployee && (
-                                                        <form onSubmit={form.handleSubmit(onSubmit)}>
-                                                            <div className="space-y-2">
-                                                                <Input
-                                                                    defaultValue={editEmployee.id}
-                                                                    {...form.register("id")}
-                                                                    placeholder="ID"
-                                                                />
-                                                                <Input
-                                                                    defaultValue={editEmployee.name}
-                                                                    {...form.register("name")}
-                                                                    placeholder="Tên nhân viên"
-                                                                />
-                                                                <Input
-                                                                    defaultValue={editEmployee.phone}
-                                                                    {...form.register("phone")}
-                                                                    placeholder="Số điện thoại"
-                                                                />
-                                                                <Input
-                                                                    defaultValue={editEmployee.birth_date}
-                                                                    {...form.register("birth_date")}
-                                                                    placeholder="Ngày sinh"
-                                                                />
-                                                                <Input
-                                                                    defaultValue={editEmployee.email}
-                                                                    {...form.register("email")}
-                                                                    placeholder="Email"
-                                                                />
-                                                                <Input
-                                                                    defaultValue={editEmployee.address}
-                                                                    {...form.register("address")}
-                                                                    placeholder="Địa chỉ"
-                                                                />
-                                                                <Input
-                                                                    defaultValue={editEmployee.department.name}
-                                                                    {...form.register("department")}
-                                                                    placeholder="Phòng ban"
-                                                                />
-                                                                <Input
-                                                                    defaultValue={editEmployee.position}
-                                                                    {...form.register("position")}
-                                                                    placeholder="Vị trí"
-                                                                />
-                                                                {/* Các trường khác tương tự */}
-                                                                <Button type="submit">Lưu thay đổi</Button>
-                                                            </div>
-                                                        </form>
-                                                    )}
-                                                </DialogContent>
-                                            </Dialog>
+
                                             <Button variant="destructive" size="sm" onClick={() => handleDelete(employee)}>
                                                 Xóa
                                             </Button>
@@ -352,6 +289,7 @@ export default function AdminInfo() {
                                     </TableRow>
                                 ))
                             ) : (
+
                                 <TableRow>
                                     <TableCell colSpan={4} className="text-center">
                                         Không tìm thấy kết quả.
@@ -369,6 +307,6 @@ export default function AdminInfo() {
                 </Link>
 
             </div>
-        </div>
+        </div >
     )
 }
