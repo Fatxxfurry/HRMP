@@ -36,5 +36,4 @@ public class Attendence {
     @ManyToOne
     @JoinColumn(name = "employee_id", referencedColumnName = "id")
     private Employee employee;
-
 }
