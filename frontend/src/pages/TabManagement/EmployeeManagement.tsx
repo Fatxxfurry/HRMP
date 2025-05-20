@@ -137,22 +137,21 @@ export default function EmployeeManagement() {
 
     }
     const handleUpdateStatus = (value: string) => {
-        if (!selectedTask?.id) {
-            console.error("No selected task to update.")
-            return
-        }
+        const finishedValue = value === 'finished';
 
-        axios.put(`http://localhost:8080/api/tasks/${selectedTask.id}`, {
-            finished: value === 'finished',
+        if (!selectedTask) return;
+
+        axios.put(`http://localhost:8080/api/tasks/${selectedTask?.id}`, {
+            finished: finishedValue,
         })
             .then(response => {
-                console.log('Task updated successfully:', response.data)
-                setShowEditDialog(false)
+                console.log('Task updated successfully:', response.data);
+                setShowEditDialog(false);
             })
             .catch(error => {
-                console.error('Error updating task:', error)
-            })
-    }
+                console.error('Error updating task:', error);
+            });
+    };
 
 
     const handleSelectChange = (value: string) => {
