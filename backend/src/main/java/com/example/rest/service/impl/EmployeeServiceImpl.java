@@ -36,6 +36,8 @@ public class EmployeeServiceImpl implements EmployeeService {
             if(employee.getPhone() != null) existingEmployee.setPhone(employee.getPhone());
             if(employee.getPassword() != null) existingEmployee.setPassword(employee.getPassword());
             if(employee.getAge() != null) existingEmployee.setAge(employee.getAge());
+            if (employee.getPosition() != null) existingEmployee.setPosition(employee.getPosition());
+
             return employeeRepository.save(existingEmployee);
         }
         return null;
@@ -44,5 +46,4 @@ public class EmployeeServiceImpl implements EmployeeService {
     public void deleteEmployee(Long id) {
         employeeRepository.deleteById(id);
     }
-
 }

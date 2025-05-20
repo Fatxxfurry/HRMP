@@ -2,10 +2,10 @@ package com.example.rest.service.impl;
 
 import java.util.List;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.example.rest.model.LeaveRequest;
+import com.example.rest.repository.DepartmentRepository;
 import com.example.rest.repository.EmployeeRepository;
 import com.example.rest.repository.LeaveRequestRepository;
 import com.example.rest.service.LeaveRequestService;
@@ -15,11 +15,13 @@ public class LeaveRequestServiceImpl implements LeaveRequestService {
 
     private final LeaveRequestRepository leaveRequestRepository;
     private final EmployeeRepository employeeRepository;
+    private final DepartmentRepository departmentRepository;
 
-    @Autowired
-    public LeaveRequestServiceImpl(LeaveRequestRepository leaveRequestRepository, EmployeeRepository employeeRepository) {
+
+    public LeaveRequestServiceImpl(LeaveRequestRepository leaveRequestRepository, EmployeeRepository employeeRepository, DepartmentRepository departmentRepository) {
         this.leaveRequestRepository = leaveRequestRepository;
         this.employeeRepository = employeeRepository;
+        this.departmentRepository = departmentRepository;
     }
 
     @Override
@@ -35,6 +37,7 @@ public class LeaveRequestServiceImpl implements LeaveRequestService {
     @Override
     public LeaveRequest createLeaveRequest(LeaveRequest leaveRequest) {
         leaveRequest.setEmployee(employeeRepository.findById(leaveRequest.getEmployee().getId()).orElse(null));
+        leaveRequest.setDepartment(departmentRepository.findById(leaveRequest.getDepartment().getId()).orElse(null));
         return leaveRequestRepository.save(leaveRequest);
     }
 

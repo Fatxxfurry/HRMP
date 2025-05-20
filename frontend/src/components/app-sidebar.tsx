@@ -10,7 +10,7 @@ import {
   Settings2,
   PanelsTopLeft,
 } from "lucide-react"
-
+import { useState } from "react"
 import { NavMain } from "@/components/nav-main"
 import { NavUser } from "@/components/nav-user"
 import { TeamSwitcher } from "@/components/team-switcher"
@@ -22,12 +22,10 @@ import {
   SidebarRail,
 } from "@/components/ui/sidebar"
 import { useAuth } from "@/context/AuthContext"
-
 // This is sample data.
 const Admindata = {
   user: {
     name: "shadcn",
-    email: "m@example.com",
     avatar: "/avatars/shadcn.jpg",
   },
   teams: [
@@ -110,7 +108,6 @@ const Admindata = {
 const Userdata = {
   user: {
     name: "shadcn",
-    email: "m@example.com",
     avatar: "/avatars/shadcn.jpg",
   },
   teams: [
@@ -192,10 +189,24 @@ const Userdata = {
 }
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const { user, loading, logout } = useAuth()
-  const navData = user?.role === "admin" ? Admindata : Userdata
+
+  if (loading) return null // hoặc loading spinner
+
+  const navData = user?.role === "admin" ? {
+    ...Admindata,
+    user: {
+      name: user?.username || "Người dùng",
+      avatar:  "/avatars/default.jpg",
+    }
+  } : {
+    ...Userdata,
+    user: {
+      name: user?.username || "Người dùng",
+      avatar:  "/avatars/default.jpg",
+    }
+  }
 
   return (
-    
     <Sidebar collapsible="icon" {...props}>
 
       <SidebarHeader>

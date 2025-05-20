@@ -29,6 +29,9 @@ public class LeaveRequest {
     @ManyToOne
     @JoinColumn(name = "employee_id", referencedColumnName = "id")
     private Employee employee;
+    @ManyToOne
+    @JoinColumn(name="department_id", referencedColumnName="id")
+    private Department department;
     
     @Enumerated(EnumType.STRING)
     private RequestStatus status;
