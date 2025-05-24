@@ -58,7 +58,7 @@ public class Employee {
 
     private String identification;
 
-    
+    private String username;
     
     private LocalDate birth_date;
     private String position;
