@@ -41,7 +41,8 @@ public class Notification {
     @UpdateTimestamp
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
-
+    @Column(name = "title", nullable = false)
+    private String title;
     public enum NotificationType {
         SALARY_INCREASE,
         LEAVE,

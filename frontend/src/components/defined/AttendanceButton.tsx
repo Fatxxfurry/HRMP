@@ -1,28 +1,125 @@
 import React, { useState, useEffect } from 'react'
 import { Button } from "@/components/ui/button"
-
+import { useAuth } from '@/context/AuthContext'
+import axios from 'axios'
+import { date } from 'zod'
+import { usePunchIn } from '@/context/AttendanceContext'
 export default function Attendance() {
-  const [isPunchedIn, setIsPunchedIn] = useState(false)
-  const [secondsElapsed, setSecondsElapsed] = useState(0)
+  
+  const [checkinDate, setCheckInDate] = useState<Date | null>(null)
+  const { user } = useAuth()
+  const {
+    isPunchedIn,
+    setIsPunchedIn,
+    checkInTime,
+    setCheckInTime,
+    secondsElapsed,
+  } = usePunchIn()
+  const statusMap = {
+    PRESENT: 0,
+    ABSENT: 1,
+    LATE: 2
+  }
+  
+  const formatTimeString = (date: Date) => {
+    return date.toTimeString().split(' ')[0] // HH:MM:SS
+  }
+  
+
 
   useEffect(() => {
-    let timer: NodeJS.Timeout
-
-    if (isPunchedIn) {
-      timer = setInterval(() => {
-        setSecondsElapsed((prev) => prev + 1)
-      }, 1000)
-    } else {
-      setSecondsElapsed(0)
+    const userKey = `checkinDate-${user?.id}`
+    const savedDate = localStorage.getItem(userKey)
+    if (savedDate) {
+      setCheckInDate(new Date(savedDate))
     }
+  }, [user?.id])
 
-    return () => clearInterval(timer)
-  }, [isPunchedIn])
+  const handleClick = async () => {
+    const userKey = `checkinDate-${user?.id}`
+    const today = new Date().toISOString().split('T')[0]
+    console.log(`User ID hiện tại: ${user?.id}`);
+    
+    if (!isPunchedIn) {
+      // === PUNCH IN ===
+      // Kiểm tra xem user đã punch in hôm nay chưa
+      const savedDate = localStorage.getItem(userKey)
+      
+      if (savedDate) {
+        const savedDateOnly = new Date(savedDate).toISOString().split('T')[0]
+        if (savedDateOnly === today) {
+          alert('Chỉ có thể chấm công 1 lần trong ngày.')
+          return
+        }
+      }
+      
+      // Thực hiện punch in
+      const now = new Date()
+      setCheckInTime(now)
+      setIsPunchedIn(true)
+      setCheckInDate(now)
+      
+      console.log('Punched in at:', formatTimeString(now))
+      
+    } else {
+      // === PUNCH OUT ===
+      // Không cần kiểm tra giới hạn 1 lần/ngày ở đây
+      // vì user đã được phép punch in rồi
+      
+      const now = new Date()
+      const checkOutTime = formatTimeString(now)
+      const checkIn = checkInTime ? formatTimeString(checkInTime) : '00:00:00'
 
-  const handleClick = () => {
-    setIsPunchedIn((prev) => !prev)
+      const calculateStatusPayload = {
+        date: today,
+        localTime: checkIn,
+        employee: {
+          id: user?.id,
+        }
+      }
+      
+      console.log('Calculate status payload:', calculateStatusPayload)
+      
+      try {
+        const statusResponse = await axios.post('http://localhost:8080/api/attendence/calculateStatus', calculateStatusPayload)
+        const statusText = statusResponse.data as 'PRESENT' | 'ABSENT' | 'LATE';
+        const statusId = statusMap[statusText];
+        
+        console.log('Status ID:', statusId)
+        
+        const createPayload = {
+          checkInTime: checkIn,
+          checkOutTime: checkOutTime,
+          date: today,
+          employee: {
+            id: user?.id,
+          },
+          status: statusId
+        }
+        
+        console.log('Attendance payload:', createPayload)
+
+        await axios.post('http://localhost:8080/api/attendence', createPayload)
+        
+        // Chỉ lưu vào localStorage khi hoàn thành thành công chu trình punch in/out
+        localStorage.setItem(userKey, new Date().toISOString())
+        
+        alert('Chấm công thành công!')
+        setIsPunchedIn(false)
+        setCheckInTime(null)
+      } catch (error) {
+        console.error('Error during punch out:', error)
+        alert('Failed to calculate or save attendance.')
+        // Không reset state nếu có lỗi, để user có thể thử lại
+        return
+      }
+
+      // Reset state sau khi hoàn thành thành công
+    
+ 
+    }
   }
-
+  
   const formatTime = (totalSeconds: number) => {
     const hours = String(Math.floor(totalSeconds / 3600)).padStart(2, '0')
     const minutes = String(Math.floor((totalSeconds % 3600) / 60)).padStart(2, '0')
@@ -31,7 +128,7 @@ export default function Attendance() {
   }
 
   return (
-    <> 
+    <>
       <Button
         className="border hover:bg-transparent text-black bg-transparent"
         onClick={handleClick}
@@ -41,6 +138,12 @@ export default function Attendance() {
 
       <span className="text-black text-lg font-semibold">
         {formatTime(secondsElapsed)}
+      </span>
+      
+      <span
+        className={`text-lg font-semibold ${isPunchedIn ? 'text-[#5CB338]' : 'text-red-600'}`}
+      >
+        {isPunchedIn ? 'Checked In' : 'Checked Out'}
       </span>
     </>
   )

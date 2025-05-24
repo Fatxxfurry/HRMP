@@ -30,7 +30,7 @@ public class NotificationService {
         notification.setNotificationContent(notificationDTO.getNotificationContent());
         notification.setNotificationType(notificationDTO.getNotificationType());
         notification.setStatus(NotificationStatus.UNREAD);
-        
+        notification.setTitle(notificationDTO.getTitle());
         Notification savedNotification = notificationRepository.save(notification);
         return convertToDTO(savedNotification);
     }
@@ -98,6 +98,7 @@ public class NotificationService {
         dto.setStatus(notification.getStatus());
         dto.setCreatedAt(notification.getCreatedAt());
         dto.setUpdatedAt(notification.getUpdatedAt());
+        dto.setTitle(notification.getTitle());
         return dto;
     }
 } 
