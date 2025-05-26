@@ -24,121 +24,94 @@ import {
     SelectTrigger,
     SelectValue,
 } from "@/components/ui/select"
-const formSchema = z.object({
-    notificationame: z.string(),
-    employeeid: z.string(),
-    type: z.any(),
-    todepartment: z.string(),
-    content: z.string(),
-    attachment: z.any()
-})
+import { useState } from 'react'
 import { Label } from "@/components/ui/label"
 import { Button } from '@/components/ui/button'
+import { useAuth } from '@/context/AuthContext'
+import { useEffect } from 'react'
+import axios from "axios"
 export default function EmployeeRequest() {
-    const form = useForm<z.infer<typeof formSchema>>({
-        resolver: zodResolver(formSchema),
-        defaultValues: {
-            notificationame: "",
-            employeeid: "",
-            todepartment: "",
-            content: "",
-        },
-    })
+    const [newtitle, setnewtitle] = useState("");
+    const [newReceiver, setNewReceiver] = useState("");
+    const [newContent, setnewContent] = useState("");
+    const { user } = useAuth();
+    
+    const setNewRequest = async () => {
+        try {
+            const today = new Date();
+            const payload = {
+                name: newtitle,
+                description: newContent,
+                requestDate: today.toISOString().slice(0, 10),
+                employee: {
+                    id: user?.id
+                },
+                department: {
+                    id: newReceiver
+                },
+                status: "PENDING"
+            }
+            console.log("payload:", payload)
+            const response = await axios.post("http://localhost:8080/api/requests", payload);
+            if (response.status === 201 || response.status === 200) {
+                alert('Thông báo đã được tạo thành công!');
+                setnewtitle('');
+                setNewReceiver('');
+                setnewContent('');
+            } else {
+                throw new Error('Lỗi khi gửi thông báo');
+            }
+        } catch (error) {
+            console.error('Lỗi khi thêm thông báo:', error);
+            alert('Gửi thông báo thất bại.');
+        }
+    }
     return (
         <div className="flex flex-1 flex-col gap-4 p-4 pt-0">
             <div className="min-h-[100vh] flex-1 rounded-xl bg-muted/50 md:min-h-min" >
                 <span className="font-bold block text-center mb-4">Tạo yêu cầu, đề xuất mới</span>
                 <div className="space-y-6 p-4" >
-                    <Form {...form} >
-                        {/*  Tên project */}
-                        <FormField
-                            control={form.control}
-                            name="notificationame"
-                            render={({ field }) => (
-                                <FormItem>
-                                    <FormLabel>Tiêu đề</FormLabel>
-                                    <FormControl>
-                                        <Input placeholder="Nhập tiêu đề thông báo" {...field} />
-                                    </FormControl>
-                                </FormItem>
-                            )}
+                    <div>
+                        <Label >Tiêu đề</Label>
+                        <Input
+                            type="text"
+                            id="title"
+                            value={newtitle}
+                            onChange={(e) => setnewtitle(e.target.value)}
                         />
-                        <FormField
-                            control={form.control}
-                            name="employeeid"
-                            render={({ field }) => (
-                                <FormItem>
-                                    <FormLabel>Mã nhân viên gửi</FormLabel>
-                                    <FormControl>
-                                        <Input placeholder="Nhập mã nhân viên gửi" {...field} />
-                                    </FormControl>
-                                </FormItem>
-                            )}
-                        />
-                        <FormField
-                            control={form.control}
-                            name="todepartment"
-                            render={({ field }) => (
-                                <FormItem>
-                                    <FormLabel>Phòng ban nhận</FormLabel>
-                                    <FormControl>
-                                        <Input placeholder="Nhập phòng ban nhận" {...field} />
-                                    </FormControl>
-                                </FormItem>
-                            )}
-                        />
-                        <FormField
-                            control={form.control}
-                            name="type"
-                            render={({ field }) => (
-                                <FormItem>
-                                    <FormLabel>Loại yêu cầu</FormLabel>
-                                    <Select onValueChange={field.onChange} defaultValue={field.value}>
-                                        <FormControl>
-                                            <SelectTrigger>
-                                                <SelectValue placeholder="Chọn loại yêu cầu" />
-                                            </SelectTrigger>
-                                        </FormControl>
-                                        <SelectContent>
-                                            <SelectItem value="dexuat">Đề xuất</SelectItem>
-                                            <SelectItem value="yeucau">Yêu cầu, xin phép</SelectItem>
-                                            <SelectItem value="khac">Khác</SelectItem>
-                                        </SelectContent>
-                                    </Select>
-                                </FormItem>
-                            )}
-                        />
-
-                        <FormField
-                            control={form.control}
-                            name="content"
-                            render={({ field }) => (
-                                <FormItem>
-                                    <FormLabel>Nội dung</FormLabel>
-                                    <Textarea placeholder="Nhập nội dung yêu cầu" {...field} />
-                                </FormItem>
-                            )}
-
-                        />
-                        <FormField
-                            control={form.control}
-                            name="attachment"
-                            render={({ field }) => (
-                                <FormItem>
-                                    <FormLabel>File đính kèm</FormLabel>
-                                    <FormControl>
-                                        <Input
-                                            type="file"
-                                            onChange={(e) => field.onChange(e.target.files?.[0])}
-                                        />
-                                    </FormControl>
-                                </FormItem>
-                            )}
-                        />
-                        <div className="flex justify-center">
-                            <Button type="submit">Gửi</Button>
+                    </div>
+                    <div>
+                        <div>
+                            <Label>Chọn phòng ban nhận</Label>
+                            <Select
+                                onValueChange={(value) => setNewReceiver(value)}
+                            >
+                                <SelectTrigger>
+                                    <SelectValue placeholder="Chọn phòng ban nhận" />
+                                </SelectTrigger>
+                                <SelectContent>
+                                    <SelectGroup>
+                                        <SelectItem value="1">IT</SelectItem>
+                                        <SelectItem value="2">SALE</SelectItem>
+                                        <SelectItem value="3">HUMAN RESOURCES</SelectItem>
+                                    </SelectGroup>
+                                </SelectContent>
+                            </Select>
                         </div>
-                    </Form>
+                    </div>
+                    <div>
+                        <Label>Nội dung</Label>
+                        <Textarea
+                            id="content"
+                            rows={5}
+                            className="min-h-[120px]"
+                            value={newContent}
+                            onChange={(e) => setnewContent(e.target.value)}
+                        />
+                    </div>
+                    <div className="flex justify-center mt-4">
+                        <Button type="submit" onClick={setNewRequest}>Gửi yêu cầu</Button>
+                    </div>
                 </div>
             </div>
         </div>)
