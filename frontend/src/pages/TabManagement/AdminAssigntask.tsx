@@ -25,7 +25,7 @@ import {
     PopoverContent,
     PopoverTrigger,
 } from "@/components/ui/popover"
-import { format } from "date-fns"
+import { format, set } from "date-fns"
 import {
     Select,
     SelectContent,
@@ -42,6 +42,7 @@ import {
     TableHeader,
     TableRow,
 } from "@/components/ui/table"
+import { Textarea } from "@/components/ui/textarea"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { X } from "lucide-react"
 import {
@@ -52,59 +53,173 @@ import {
     DialogTitle,
     DialogTrigger,
 } from "@/components/ui/dialog"
+import { parse } from 'path'
+import { useEffect } from 'react'
+import { useAuth } from '@/context/AuthContext'
+import axios from 'axios'
 
-const formSchema = z.object({
-    projectname: z.string(),
-    taskname: z.string(),
-    description: z.string(),
-    startdate: z.coerce.date(),
-    enddate: z.coerce.date(),
-    employeeid: z.string(),
-    department: z.string(),
-})
 
-const TaskProjectdata = [
-    { id: "1", name: "Center a div", projectname: "Website cho FPT", date: "1/1/2024", deadline: "1/1/2025", status: "Hoàn thành", employee: "Nguyễn Văn A", department: "Phòng A" },
-    { id: "2", name: "Delete database", projectname: "Website cho Google", date: "1/1/2024", deadline: "1/1/2025", status: "Đang thực hiện", employee: "Nguyễn Văn A", department: "Phòng A" },
-    { id: "3", name: "Sell data", projectname: "Website cho FPT", date: "1/1/2024", deadline: "1/1/2025", status: "Đang thực hiện", employee: "NaH", department: "Phòng A" },
-]
+
+interface Task {
+    id: number,
+    description: string,
+    finished: boolean,
+    name: string,
+    employee: {
+        id: number,
+        name: string,
+    }
+    project: {
+        id: number,
+        name: string,
+        involededDepartments: {
+            id: number,
+            name: string,
+        }
+    }
+    end_date: string,
+    start_date: string
+}
 
 export default function AdminAssigntask() {
-    const [editTask, setEditTask] = useState<typeof TaskProjectdata[0] | null>(null)
-    const [deleteTaskId, setDeleteTaskId] = useState<string | null>(null)
+    const [editTask, setEditTask] = useState<Task | null>(null)
+    const [deleteTask, setDeleteTask] = useState<Task | null>(null)
     const [showEditDialog, setShowEditDialog] = useState(false)
     const [showDeleteDialog, setShowDeleteDialog] = useState(false)
+    const [newTaskData, setNewTaskData] = useState<Task | null>(null)
+    const [TaskProjectdata, setTaskProjectData] = useState<Task[]>([])
 
-    function handleEdit(task: typeof TaskProjectdata[0]) {
-        setEditTask(task)
-        setShowEditDialog(true)
+    //Create Task Schema
+    const [newTaskName, setNewTaskName] = useState("")
+    const [newTaskDescription, setNewTaskDescription] = useState("")
+    const [newTaskStartDate, setNewTaskStartDate] = useState("")
+    const [newTaskEndDate, setNewTaskEndDate] = useState("")
+    const [newTaskEmployeeId, setNewTaskEmployeeId] = useState(0)
+    const [newTaskProjectId, setNewTaskProjectId] = useState(0)
+    //Edit 
+    const [EditTaskName, setEditTaskName] = useState("")
+    const [EditTaskDescription, setEditTaskDescription] = useState("")
+    const [EditTaskStartDate, setEditTaskStartDate] = useState("")
+    const [EditTaskEndDate, setEditTaskEndDate] = useState("")
+    const [EditTaskEmployeeId, setEditTaskEmployeeId] = useState(0)
+    const [EditTaskProjectId, setEditTaskProjectId] = useState(0)
+
+    const { user } = useAuth()
+    useEffect(() => {
+        if (user?.id) {
+            loadTaskData()
+        }
+    }, [user])
+    const loadTaskData = async () => {
+        try {
+            const response = await axios.get("http://localhost:8080/api/tasks")
+            if (response.status === 200) {
+                setTaskProjectData(response.data)
+                console.log("Task data loaded successfully:", response.data)
+            } else {
+                console.error("Failed to fetch task data")
+            }
+        } catch (error) {
+            console.error("Error fetching task data:", error)
+        }
+    }
+    const AssignNewTask = async () => {
+        const payload = {
+            name: newTaskName,
+            description: newTaskDescription,
+            start_date: newTaskStartDate,
+            end_date: newTaskEndDate,
+            finished: false,
+            employee: {
+                id: newTaskEmployeeId
+            },
+            project: {
+                id: newTaskProjectId
+            }
+        }
+        try {
+            const response = await axios.post("http://localhost:8080/api/tasks", payload)
+            if (response.status === 200 || response.status === 201) {
+                alert("Create successfully")
+            } else {
+                alert("Create failed")
+            }
+        } catch (error) {
+            console.error("Error:", error)
+        }
+    }
+    const UpdateTask = async () => {
+        if (editTask) {
+            const payload = {
+                name: EditTaskName,
+                description: EditTaskDescription,
+                start_date: EditTaskStartDate,
+                end_date: EditTaskEndDate,
+                finished: editTask.finished,
+                employee: {
+                    id: EditTaskEmployeeId
+                },
+                project: {
+                    id: EditTaskProjectId
+                }
+            }
+            try {
+                const response = await axios.put(`http://localhost:8080/api/tasks/${editTask.id}`, payload)
+                if (response.status === 200) {
+                    alert("Cập nhật task thành công")
+                    setShowEditDialog(false)
+                    loadTaskData() // Reload task data after update
+                } else {
+                    alert("Cập nhật task thất bại")
+                }
+            } catch (error) {
+                console.error("Error updating task:", error)
+                alert("Lỗi khi cập nhật task")
+            }
+        }
     }
 
-    function handleDelete(id: string) {
-        setDeleteTaskId(id)
-        setShowDeleteDialog(true)
+    function handleEdit(task: Task) {
+        setEditTask(task);
+        setEditTaskName(task.name);
+        setEditTaskDescription(task.description);
+        setEditTaskStartDate(task.start_date);
+        setEditTaskEndDate(task.end_date);
+        setEditTaskEmployeeId(task.employee.id);
+        setEditTaskProjectId(task.project.id);
+        setShowEditDialog(true);
     }
 
-    const form = useForm<z.infer<typeof formSchema>>({
-        resolver: zodResolver(formSchema),
-        defaultValues: {
-            projectname: "",
-            taskname: "",
-            description: "",
-            startdate: new Date(),
-            enddate: new Date(),
-            employeeid: "",
-        },
-    })
+    const handleDelete = (task: Task) => {
+        setDeleteTask(task);
+        setShowDeleteDialog(true);
+    };
 
-    function onSubmit(values: z.infer<typeof formSchema>) {
+    const confirmDelete = async () => {
+        if (deleteTask) {
+            try {
+                const response = await axios.delete(`http://localhost:8080/api/tasks/${deleteTask.id}`);
+                if (response.status === 200) {
+                    alert("Xoá task thành công");
+                    setShowDeleteDialog(false);
+                    loadTaskData(); // Reload task data after deletion
+                } else {
+                    alert("Xoá task thất bại");
+                }
+            } catch (error) {
+                console.error("Error deleting task:", error);
+                alert("Lỗi khi xoá task");
+            }
+        }
+    }
 
-        console.log(values)
+    function onSubmit() {
+        AssignNewTask()
     }
     const [projectfilter, setprojectfilter] = useState("")
-    const projects = [...new Set(TaskProjectdata.map((project) => project.projectname))]
+    const projects = [...new Set(TaskProjectdata.map((project) => project.project?.involededDepartments?.name))]
     const filteredData = TaskProjectdata.filter((project) => {
-        const projectMatch = !projectfilter || project.projectname === projectfilter
+        const projectMatch = !projectfilter || project.project?.involededDepartments?.name === projectfilter
         return projectMatch
     })
     const clearFilters = () => {
@@ -163,12 +278,12 @@ export default function AdminAssigntask() {
                                         <TableRow key={task.id}>
                                             <TableCell className="font-medium">{task.id}</TableCell>
                                             <TableCell>{task.name}</TableCell>
-                                            <TableCell>{task.projectname}</TableCell>
-                                            <TableCell>{task.date}</TableCell>
-                                            <TableCell>{task.deadline}</TableCell>
-                                            <TableCell>{task.status}</TableCell>
-                                            <TableCell>{task.employee}</TableCell>
-                                            <TableCell>{task.department}</TableCell>
+                                            <TableCell>{task.project?.name}</TableCell>
+                                            <TableCell>{task.start_date}</TableCell>
+                                            <TableCell>{task.end_date}</TableCell>
+                                            <TableCell>{task.finished}</TableCell>
+                                            <TableCell>{task.employee.name}</TableCell>
+                                            <TableCell>{task.project?.involededDepartments?.name}</TableCell>
                                             <TableCell className="space-x-2">
                                                 <Button variant="outline" size="sm" onClick={() => handleEdit(task)}>
                                                     Sửa
@@ -178,38 +293,44 @@ export default function AdminAssigntask() {
                                                         <DialogHeader>
                                                             <DialogTitle>Sửa Task</DialogTitle>
                                                         </DialogHeader>
-                                                        {editTask && (
-                                                            <form onSubmit={form.handleSubmit(onSubmit)}>
-                                                                <div className="space-y-2">
-                                                                    <Input
-                                                                        defaultValue={editTask.name}
-                                                                        {...form.register("taskname")}
-                                                                        placeholder="Tên Task"
-                                                                    />
-                                                                    <Input
-                                                                        defaultValue={editTask.projectname}
-                                                                        {...form.register("projectname")}
-                                                                        placeholder="Tên Dự Án"
-                                                                    />
-                                                                    <Input
-                                                                        defaultValue={editTask.employee}
-                                                                        {...form.register("employeeid")}
-                                                                        placeholder="Nhân viên"
-                                                                    />
-                                                                    <Input
-                                                                        defaultValue={editTask.department}
-                                                                        {...form.register("department")}
-                                                                        placeholder="Phòng ban"
-                                                                    />
-                                                                    {/* Các trường khác tương tự */}
-                                                                    <Button type="submit">Lưu thay đổi</Button>
-                                                                </div>
-                                                            </form>
-                                                        )}
+                                                        <div className="space-y-2">
+                                                            <Input
+                                                                value={EditTaskName}
+                                                                onChange={(e) => setEditTaskName(e.target.value)}
+                                                                placeholder="Tên Task"
+                                                            />
+                                                            <Input
+                                                                value={EditTaskProjectId}
+                                                                onChange={(e) => setEditTaskProjectId(Number(e.target.value))}
+                                                                placeholder="ID Dự Án"
+                                                            />
+                                                            <Input
+                                                                value={EditTaskEmployeeId}
+                                                                onChange={(e) => setEditTaskEmployeeId(Number(e.target.value))}
+                                                                placeholder="Mã Nhân viên"
+                                                            />
+                                                            <Textarea
+                                                                value={EditTaskDescription}
+                                                                onChange={(e) => setEditTaskDescription(e.target.value)}
+                                                                placeholder="Mô tả"
+                                                            />
+                                                            <Input
+                                                                value={EditTaskStartDate}
+                                                                onChange={(e) => setEditTaskStartDate(e.target.value)}
+                                                                placeholder="Ngày bắt đầu"
+                                                            />
+                                                            <Input
+                                                                value={EditTaskEndDate}
+                                                                onChange={(e) => setEditTaskEndDate(e.target.value)}
+                                                                placeholder="Ngày kết thúc"
+                                                            />
+                                                            <Button type="submit" onClick={()=>UpdateTask()}>Lưu thay đổi</Button>
+                                                        </div>
+
                                                     </DialogContent>
                                                 </Dialog>
-
-                                                <Button variant="destructive" size="sm" onClick={() => handleDelete(task.id)}>
+                                                <Button variant="destructive" size="sm" onClick={() =>
+                                                    handleDelete(task)}>
                                                     Xóa
                                                 </Button>
                                                 <Dialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
@@ -227,7 +348,7 @@ export default function AdminAssigntask() {
                                                             <Button
                                                                 variant="destructive"
                                                                 onClick={() => {
-                                                                    console.log("Xoá task ID:", deleteTaskId)
+                                                                    confirmDelete()
                                                                     setShowDeleteDialog(false)
                                                                 }}
                                                             >
@@ -255,163 +376,76 @@ export default function AdminAssigntask() {
             </div>
             <div className="grid auto-rows-min gap-4 md:grid-cols-1">
                 <div className="aspect-video rounded-xl bg-muted/50 p-4" >
-                    <Form {...form}>
-                        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-                            {/* Tên project */}
-                            <FormField
-                                control={form.control}
-                                name="projectname"
-                                render={({ field }) => (
-                                    <FormItem>
-                                        <FormLabel>Tên Project</FormLabel>
-                                        <FormControl>
-                                            <Input placeholder="Nhập tên project" {...field} />
-                                        </FormControl>
-                                        <FormMessage />
-                                    </FormItem>
-                                )}
-                            />
+                    {/* Tên project */}
+                    <div>
+                        <label className="block mb-1">Project ID</label>
+                        <Input
+                            placeholder="Nhập tên project"
+                            value={newTaskProjectId}
+                            onChange={(e) => setNewTaskProjectId(Number(e.target.value))}
+                        />
+                    </div>
 
-                            {/* Tên task */}
-                            <FormField
-                                control={form.control}
-                                name="taskname"
-                                render={({ field }) => (
-                                    <FormItem>
-                                        <FormLabel>Tên Task</FormLabel>
-                                        <FormControl>
-                                            <Input placeholder="Nhập tên task" {...field} />
-                                        </FormControl>
-                                        <FormMessage />
-                                    </FormItem>
-                                )}
-                            />
+                    {/* Tên task */}
+                    <div>
+                        <label className="block mb-1">Tên Task</label>
+                        <Input
+                            placeholder="Nhập tên project"
+                            value={newTaskName}
+                            onChange={(e) => setNewTaskName(e.target.value)}
+                        />
+                    </div>
 
-                            {/* Mô tả */}
-                            <FormField
-                                control={form.control}
-                                name="description"
-                                render={({ field }) => (
-                                    <FormItem>
-                                        <FormLabel>Mô tả</FormLabel>
-                                        <FormControl>
-                                            <Input placeholder="Nhập mô tả task" {...field} />
-                                        </FormControl>
-                                        <FormMessage />
-                                    </FormItem>
-                                )}
-                            />
+                    {/* Mô tả */}
+                    <div>
+                        <label className="block mb-1">Mô tả task</label>
+                        <Textarea
+                            className="min-h-[120px]"
+                            id="description"
+                            rows={5}
+                            placeholder="Mô tả task"
+                            value={newTaskDescription}
+                            onChange={(e) => setNewTaskDescription(e.target.value)}
+                        />
+                    </div>
+                    {/* Ngày bắt đầu */}
+                    <div>
+                        <label className="block mb-1">Nhập ngày bắt đầu</label>
+                        <Input
+                            placeholder="Nhập ngày bắt đầu"
+                            value={newTaskStartDate}
+                            onChange={(e) => setNewTaskStartDate(e.target.value)}
+                        />
+                    </div>
 
-                            {/* Ngày bắt đầu */}
-                            <FormField
-                                control={form.control}
-                                name="startdate"
-                                render={({ field }) => (
-                                    <FormItem className="flex flex-col">
-                                        <FormLabel>Ngày bắt đầu</FormLabel>
-                                        <Popover>
-                                            <PopoverTrigger >
-                                                <Button
-                                                    variant={"outline"}
-                                                    className={cn(
-                                                        "w-[280px] justify-start text-left font-normal",
-                                                        !field.value && "text-muted-foreground"
-                                                    )}
-                                                >
-                                                    <CalendarIcon className="mr-2 h-4 w-4" />
-                                                    {field.value ? format(field.value, "dd/MM/yyyy") : <span>Chọn ngày</span>}
-                                                </Button>
-                                            </PopoverTrigger>
-                                            <PopoverContent className="w-auto p-0" align="start">
-                                                <Calendar
-                                                    mode="single"
-                                                    selected={field.value}
-                                                    onSelect={field.onChange}
-                                                    initialFocus
-                                                />
-                                            </PopoverContent>
-                                        </Popover>
-                                        <FormMessage />
-                                    </FormItem>
-                                )}
-                            />
-
-                            {/* Deadline */}
-                            <FormField
-                                control={form.control}
-                                name="enddate"
-                                render={({ field }) => (
-                                    <FormItem className="flex flex-col">
-                                        <FormLabel>Deadline</FormLabel>
-                                        <Popover>
-                                            <PopoverTrigger >
-                                                <Button
-                                                    variant={"outline"}
-                                                    className={cn(
-                                                        "w-[280px] justify-start text-left font-normal",
-                                                        !field.value && "text-muted-foreground"
-                                                    )}
-                                                >
-                                                    <CalendarIcon className="mr-2 h-4 w-4" />
-                                                    {field.value ? format(field.value, "dd/MM/yyyy") : <span>Chọn ngày</span>}
-                                                </Button>
-                                            </PopoverTrigger>
-                                            <PopoverContent className="w-auto p-0 z-1000" align="start">
-                                                <Calendar
-                                                    mode="single"
-                                                    selected={field.value}
-                                                    onSelect={field.onChange}
-                                                    initialFocus
-                                                />
-                                            </PopoverContent>
-                                        </Popover>
-                                        <FormMessage />
-                                    </FormItem>
-                                )}
-                            />
-
-                            {/* Mã nhân viên */}
-                            <FormField
-                                control={form.control}
-                                name="employeeid"
-                                render={({ field }) => (
-                                    <FormItem>
-                                        <FormLabel>Mã nhân viên</FormLabel>
-                                        <FormControl>
-                                            <Input placeholder="Nhập mã nhân viên" {...field} />
-                                        </FormControl>
-                                        <FormMessage />
-                                    </FormItem>
-                                )}
-                            />
-                            <FormField
-                                control={form.control}
-                                name="department"
-                                render={({ field }) => (
-                                    <FormItem>
-                                        <FormLabel>Phòng ban</FormLabel>
-                                        <FormControl>
-                                            <Input placeholder="Nhập phòng ban quản lí" {...field} />
-                                        </FormControl>
-                                        <FormMessage />
-                                    </FormItem>
-                                )}
-                            />
-
-                            <div className="flex justify-center">
-                                <Button type="submit">Giao task</Button>
-                            </div>
-                        </form>
-                    </Form>
-
+                    {/* Deadline */}
+                    <div>
+                        <label className="block mb-1">Nhập ngày kết thúc</label>
+                        <Input
+                            placeholder="Nhập ngày kết thúc"
+                            value={newTaskEndDate}
+                            onChange={(e) => setNewTaskEndDate(e.target.value)}
+                        />
+                    </div>
+                    {/* Mã nhân viên */}
+                    <div>
+                        <label className="block mb-1">Mã nhân viên</label>
+                        <Input
+                            placeholder="Nhập Mã nhân viên"
+                            value={newTaskEmployeeId}
+                            onChange={(e) => setNewTaskEmployeeId(Number(e.target.value))} />
+                    </div>
+                    <div className="flex justify-center mt-4">
+                        <Button type="submit" onClick={onSubmit}>Giao task</Button>
+                    </div>
                 </div>
 
 
 
 
-            </div>
+            </div >
 
 
-        </div>
+        </div >
     )
 }

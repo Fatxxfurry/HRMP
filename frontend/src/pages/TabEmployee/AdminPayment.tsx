@@ -36,7 +36,20 @@ import {
     CardHeader,
     CardTitle,
 } from "@/components/ui/card"
+import { Link } from 'react-router'
+import {
+    Dialog,
+    DialogContent,
+    DialogDescription,
+    DialogHeader,
+    DialogTitle,
+    DialogTrigger,
+} from "@/components/ui/dialog"
 import { Pie, PieChart } from "recharts"
+import { useAuth } from '@/context/AuthContext'
+import axios from "axios"
+import { useEffect } from 'react'
+import { useNavigate } from "react-router"
 const PenaltyBonusChartConfig = {
     finished: {
         label: "Finished",
@@ -51,28 +64,72 @@ const PenaltyBonusData = [
     { status: "Penalty", number: 5000000, fill: "hsl(var(--chart-1))" },
     { status: "Bonus", number: 1000000, fill: "hsl(var(--chart-2))" },
 ]
-const employeeWageData = [
-    { id: "NV001", name: "Nguyễn Văn A", department: "IT", position: "Dev", basicwage: "5000000", bonus: "1000000", penalty: "500000", total: "5500000" },
-    { id: "NV002", name: "Nguyễn Văn B", department: "HR", position: "HR", basicwage: "5000000", bonus: "1000000", penalty: "500000", total: "5500000" },
-    { id: "CEO003", name: "Nguyễn Văn C", department: "BUS", position: "CEO", basicwage: "5000000", bonus: "1000000", penalty: "500000", total: "5500000" },
-]
+interface Salary {
+    id: number,
+    basic_salary: string,
+    bonus: string,
+    minus: string,
+    bonus_reason: string,
+    minus_reason: string,
+    date_paid: string,
+    employee: {
+        id: number,
+        name: string,
+        position: string,
+        department: {
+            id: number,
+            name: string,
+            managerId: number
+        }
+    },
+    total_salary: string
+}
 export default function AdminPayment() {
     const [nameFilter, setNameFilter] = useState("")
     const [departmentFilter, setDepartmentFilter] = useState("")
     const [positionFilter, setPositionFilter] = useState("")
+    const [employeeWageData, setemployeeWageData] = useState<Salary[]>([]);
+    const { user } = useAuth();
+    const [showDeleteDialog, setShowDeleteDialog] = useState(false)
+    const [deleteSalary, setdeleteSalary] = useState<Salary | null>(null);
 
+    const navigate = useNavigate()
+
+    useEffect(() => {
+        if (user?.id) {
+            loadSalaryData()
+        }
+    }, [user])
+    const loadSalaryData = async () => {
+        try {
+            const response = await axios.get(`http://localhost:8080/api/salaries`)
+            if (!response) {
+                throw new Error('Failed to fetch employee my notification info')
+            }
+            const data: Salary[] = response.data
+
+            console.log("my loadSalaryData: ", data)
+            setemployeeWageData(data)
+        } catch (error) {
+            console.error('Error fetching salary info:', error)
+        }
+    }
+    const handleEdit = (id: number) => {
+        navigate(`/admin/edit-salary/${id}`);
+
+    };
     // Get unique departments and positions for filter dropdowns
-    const departments = [...new Set(employeeWageData.map((emp) => emp.department))]
-    const positions = [...new Set(employeeWageData.map((emp) => emp.position))]
+    const departments = [...new Set(employeeWageData.map((emp) => emp.employee?.department?.name))]
+    const positions = [...new Set(employeeWageData.map((emp) => emp.employee?.position))]
 
     // Filter the data based on current filter values
-    const filteredData = employeeWageData.filter((employee) => {
-        const nameMatch = employee.name.toLowerCase().includes(nameFilter.toLowerCase())
-        const departmentMatch = !departmentFilter || employee.department === departmentFilter
-        const positionMatch = !positionFilter || employee.position === positionFilter
+    const filteredData = employeeWageData.filter((emp) => {
+        const nameMatch = emp.employee?.name?.toLowerCase().includes(nameFilter.toLowerCase()) ?? false;
+        const departmentMatch = !departmentFilter || emp.employee?.department?.name === departmentFilter;
+        const positionMatch = !positionFilter || emp.employee?.position === positionFilter;
 
-        return nameMatch && departmentMatch && positionMatch
-    })
+        return nameMatch && departmentMatch && positionMatch;
+    });
 
     // Clear all filters
     const clearFilters = () => {
@@ -80,61 +137,27 @@ export default function AdminPayment() {
         setDepartmentFilter("")
         setPositionFilter("")
     }
+    const handleDelete = (salary: Salary) => {
+        setdeleteSalary(salary);
+        setShowDeleteDialog(true);
+    };
+    const confirmDelete = async () => {
+        try {
+            if (deleteSalary) {
+                await axios.delete(`http://localhost:8080/api/salaries/${deleteSalary.id}`);
+                // Xóa khỏi UI sau khi xóa backend thành công
+                setemployeeWageData((prev) => prev.filter((e) => e.id !== deleteSalary.id));
+                setShowDeleteDialog(false);
+                setdeleteSalary(null);
+            }
+        } catch (error) {
+            console.error("Lỗi khi xóa nhân viên:", error);
+        }
+    };
     return (
         <div className="flex flex-1 flex-col gap-4 p-4 pt-0">
-            <div className="grid auto-rows-min gap-4 md:grid-cols-2">
-                <div className="aspect-video rounded-xl bg-muted/50 p-6 flex justify-center items-center">
-                    <div className="w-full max-w-sm">
-                        <span className="font-bold block text-center mb-4">Thưởng / phạt</span>
-                        <div className="grid gap-4">
-                            <div>
-                                <Label htmlFor="EmployeeID">Mã nhân viên</Label>
-                                <Input type="text" id="EmployeeID" placeholder="Mã nhân viên" />
-                            </div>
-                            <div>
-                                <Label>Thao tác</Label>
-                                <Select>
-                                    <SelectTrigger className="w-full">
-                                        <SelectValue placeholder="Chọn thao tác" />
-                                    </SelectTrigger>
-                                    <SelectContent>
-                                        <SelectItem value="bonus">Thưởng</SelectItem>
-                                        <SelectItem value="penalty">Phạt</SelectItem>
-                                    </SelectContent>
-                                </Select>
-                            </div>
-                            <div>
-                                <Label htmlFor="Reason">Lí do thưởng/phạt</Label>
-                                <Input type="text" id="Reason" placeholder="Lí do" />
-                            </div>
-                            <Button >
-                                Xác nhận
-                            </Button>
-                        </div>
-                    </div>
-                </div>
 
-                <div className="aspect-video rounded-xl bg-muted/50 p-6 flex justify-center items-center" >
-                    <div className="w-full max-w-sm">
-                        <span className="font-bold block text-center mb-4">Sửa lương</span>
-                        <div className="grid gap-4">
-                            <div>
-                                <Label htmlFor="EmployeeID">Mã nhân viên</Label>
-                                <Input type="text" id="EmployeeID" placeholder="Mã nhân viên" />
-                            </div>
-                     
-                            <div>
-                                <Label htmlFor="Reason">Lương mới</Label>
-                                <Input type="text" id="Reason" placeholder="Lương mới" />
-                            </div>
-                            <Button >
-                                Xác nhận
-                            </Button>
-                        </div>
-                    </div>
-                </div>
 
-            </div>
             <div className="min-h-[100vh] flex-1 rounded-xl bg-muted/50 md:min-h-min" >
                 <div className="flex flex-row gap-4  mb-2">
                     <div className="space-y-2">
@@ -191,6 +214,7 @@ export default function AdminPayment() {
                         <TableCaption>Danh sách nhân viên và lương tương ứng.</TableCaption>
                         <TableHeader>
                             <TableRow>
+
                                 <TableHead>Mã nhân viên</TableHead>
                                 <TableHead>Tên nhân viên</TableHead>
                                 <TableHead>Phòng ban trực thuộc</TableHead>
@@ -199,21 +223,58 @@ export default function AdminPayment() {
                                 <TableHead>Thưởng</TableHead>
                                 <TableHead>Phạt</TableHead>
                                 <TableHead>Tổng cộng</TableHead>
+                                <TableHead>Thao tác</TableHead>
                             </TableRow>
                         </TableHeader>
                         <TableBody>
                             {filteredData.length > 0 ? (
                                 filteredData.map((salary) => (
-                                    <TableRow key={salary.id}>
-                                        <TableCell className="font-medium">{salary.id}</TableCell>
-                                        <TableCell>{salary.name}</TableCell>
-                                        <TableCell>{salary.department}</TableCell>
-                                        <TableCell>{salary.position}</TableCell>
-                                        <TableCell>{salary.basicwage}</TableCell>
-                                        <TableCell>{salary.bonus}</TableCell>
-                                        <TableCell>{salary.penalty}</TableCell>
-                                        <TableCell>{salary.total}</TableCell>
-                                    </TableRow>
+                                    salary.employee ? (
+                                        <TableRow key={salary.id}>
+                                            <TableCell className="font-medium">{salary.employee.id}</TableCell>
+                                            <TableCell>{salary.employee.name}</TableCell>
+                                            <TableCell>{salary.employee.department?.name ?? "N/A"}</TableCell>
+                                            <TableCell>{salary.employee.position ?? "N/A"}</TableCell>
+                                            <TableCell>{salary.basic_salary}</TableCell>
+                                            <TableCell>{salary.bonus}</TableCell>
+                                            <TableCell>{salary.minus}</TableCell>
+                                            <TableCell>{salary.total_salary}</TableCell>
+                                            <TableCell className="space-x-2">
+                                                <Button variant="outline" size="sm" onClick={(event) => {
+                                                    event.stopPropagation();
+                                                    handleEdit(salary.id)
+                                                }}>
+                                                    Sửa
+                                                </Button>
+                                                <Button variant="destructive" size="sm" onClick={() =>
+                                                    handleDelete(salary)
+                                                }>
+                                                    Xóa
+                                                </Button>
+                                                <Dialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
+                                                    <DialogContent>
+                                                        <DialogHeader>
+                                                            <DialogTitle>Xác nhận xoá</DialogTitle>
+                                                            <DialogDescription>
+                                                                Bạn có chắc chắn muốn xoá task này không? Hành động này không thể hoàn tác.
+                                                            </DialogDescription>
+                                                        </DialogHeader>
+                                                        <div className="flex justify-end gap-2">
+                                                            <Button variant="outline" onClick={() => setShowDeleteDialog(false)}>
+                                                                Huỷ
+                                                            </Button>
+                                                            <Button
+                                                                variant="destructive"
+                                                                onClick={confirmDelete}
+                                                            >
+                                                                Xoá
+                                                            </Button>
+                                                        </div>
+                                                    </DialogContent>
+                                                </Dialog>
+                                            </TableCell>
+                                        </TableRow>
+                                    ) : null
                                 ))
                             ) : (
                                 <TableRow>
@@ -225,6 +286,11 @@ export default function AdminPayment() {
                         </TableBody>
                     </Table>
                 </ScrollArea>
+                <Link to='/admin/add-salary'>
+                    <Button variant="outline" size="sm" >
+                        Thêm nhân viên
+                    </Button>
+                </Link>
             </div>
         </div>
     )

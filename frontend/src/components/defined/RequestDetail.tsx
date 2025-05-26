@@ -1,107 +1,100 @@
-import React, {useState} from "react"
+import React, { useState } from "react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Separator } from "@/components/ui/separator"
 import { Download } from "lucide-react"
+import { useLocation } from 'react-router'
+import axios from "axios"
 
-type Attachment = {
-  name: string
-  url: string
+export interface RequestDetailProps {
+  senderName: string,
+  senderContent: string,// Có thể truyền dynamic nếu có
+  senderdepartment: string,          // Có thể truyền dynamic nếu có
+  senderStatus: string,
+  senderHeader: string,
+  senderDate: string
+  requestsID: number
 }
-var attachments: Attachment[] = []
 
-export interface NotificationDetailProps {
-  NotificationData: {
-    senderName: string
-    senderEmail: string
-    department: string
-    content: string
-    attachments: Attachment[]
-  }
-}
 
 export default function RequestDetail() {
 
-  const [status, setStatus] = useState<"pending" | "accepted" | "rejected">("pending")
+  const location = useLocation()
+  const requestinfo = location.state as RequestDetailProps
+  const [status, setStatus] = useState(requestinfo.senderStatus)
 
-  const handleAccept = () => setStatus("accepted")
-  const handleReject = () => setStatus("rejected")
-    return (
+  const handleAccept = async () => {
+    const updatedStatus = "APPROVED";
+    setStatus(updatedStatus);
+
+    const payload = {
+      status: updatedStatus,
+    };
+    try {
+      const response = await axios.put(`http://localhost:8080/api/requests/${requestinfo.requestsID}`, payload)
+      alert("Cập nhật trạng thái thành công")
+      if (!response) {
+        throw new Error('Failed to update status')
+      }
+    } catch (error) {
+      console.error('Error update status:', error)
+    }
+  }
+  const handleReject = async () => {
+    const updatedStatus = "REJECTED";
+    setStatus(updatedStatus);
+
+    const payload = {
+      status: updatedStatus,
+    };
+    try {
+      const response = await axios.put(`http://localhost:8080/api/requests/${requestinfo.requestsID}`, payload)
+      alert("Cập nhật trạng thái thành công")
+      if (!response) {
+        throw new Error('Failed to update status')
+      }
+    } catch (error) {
+      console.error('Error update status:', error)
+    }
+  }
+  return (
 
     <div className="flex flex-1 flex-col gap-4 p-4 pt-0">
-        <Card>
-          <CardHeader>
-            <CardTitle>Chi tiết yêu cầu</CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <div>
-              <p className="text-sm text-muted-foreground">Người gửi</p>
-              <p className="text-lg font-medium">Kha</p>
-            </div>
+      <Card>
+        <CardHeader>
+          <CardTitle>Chi tiết yêu cầu</CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <div>
+            <p className="text-sm text-muted-foreground">Người gửi</p>
+            <p className="text-lg font-medium">{requestinfo.senderName}</p>
+          </div>
+          <Separator />
+          <div>
+            <p className="text-sm text-muted-foreground">Phòng ban</p>
+            <p className="text-base">{requestinfo.senderdepartment}</p>
+          </div>
 
-            <Separator />
+          <Separator />
+          <div>
+            <p className="text-sm text-muted-foreground">Tiêu đề</p>
+            <p className="text-base whitespace-pre-line">{requestinfo.senderHeader}</p>
+          </div>
+          <Separator />
+          <div>
+            <p className="text-sm text-muted-foreground">Nội dung</p>
+            <p className="text-base whitespace-pre-line">{requestinfo.senderContent}</p>
+          </div>
 
-            <div>
-              <p className="text-sm text-muted-foreground">Email người gửi</p>
-              <p className="text-base">edmgvn@gmail.com</p>
-            </div>
-
-            <Separator />
-
-            <div>
-              <p className="text-sm text-muted-foreground">Phòng ban</p>
-              <p className="text-base">Phòng IT</p>
-            </div>
-
-            <Separator />
-
-            <div>
-              <p className="text-sm text-muted-foreground">Nội dung</p>
-              <p className="text-base whitespace-pre-line">abcxyz</p>
-            </div>
-
-            <Separator />
-            <div>
+          <Separator />
+          <div>
             <p className="text-sm text-muted-foreground">Trạng thái</p>
             <p className="text-base font-medium">
-              {status === "pending"
-                ? "Chưa xử lý"
-                : status === "accepted"
-                ? "Đã chấp nhận"
-                : "Đã từ chối"}
+              {status}
             </p>
           </div>
-            <Separator />
-
-            <div>
-              <p className="text-sm text-muted-foreground mb-2">File đính kèm</p>
-              {attachments.length > 0 ? (
-                <ul className="space-y-2">
-                  {attachments.map((file, index) => (
-                    <li
-                      key={index}
-                      className="flex items-center justify-between bg-muted p-3 rounded-md"
-                    >
-                      <span>{file.name}</span>
-                      <a
-                        href={file.url}
-                        download
-                        target="_blank"
-                        rel="noopener noreferrer"
-                      >
-                        <Button variant="outline" className="flex items-center gap-2">
-                          <Download className="w-4 h-4" />
-                          Tải xuống
-                        </Button>
-                      </a>
-                    </li>
-                  ))}
-                </ul>
-              ) : (
-                <p className="text-muted-foreground text-sm">Không có file đính kèm.</p>
-              )}
-            </div>
-            {status === "pending" && (
+          <Separator />
+          {status === "PENDING" && (
             <div className="flex gap-4 pt-4">
               <Button onClick={handleAccept} className="bg-green-600 hover:bg-green-700">
                 Chấp nhận
@@ -111,8 +104,8 @@ export default function RequestDetail() {
               </Button>
             </div>
           )}
-          </CardContent>
-        </Card>
+        </CardContent>
+      </Card>
     </div>
   )
 }
