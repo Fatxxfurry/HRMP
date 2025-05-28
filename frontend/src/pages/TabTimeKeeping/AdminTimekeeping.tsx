@@ -104,16 +104,14 @@ export default function AdminTimekeeping() {
             setAttendanceData(data);
             const today = new Date().toISOString().split("T")[0];
             const count: number = data.filter((entry: AttendanceData) =>
-                entry.date === today && entry.status === "PRESENT"
+                entry.status === "PRESENT"
             ).length;
             const latecount: number = data.filter((entry: AttendanceData) =>
-                entry.date === today && entry.status === "LATE"
+                entry.status === "LATE"
             ).length;
-            const totalentry: number = data.filter((entry: AttendanceData) =>
-                entry.date === today
-            ).length;
+            const totalentry: number = data.length;
             const absentcount: number = data.filter((entry: AttendanceData) =>
-                entry.date === today && entry.status === "ABSENT"
+                entry.status === "ABSENT"
             ).length;
             setPresentDay(count);
             setlateDay(latecount);
@@ -219,13 +217,13 @@ export default function AdminTimekeeping() {
                 </div>
             </div>
             <div className="grid auto-rows-min gap-4 md:grid-cols-2">
-                <div className="aspect-video rounded-xl bg-muted/50 p-4" >
+                <div className="aspect-video rounded-xl bg-muted/50 p-4">
                     <CardHeader>
                         <CardTitle>Số giờ làm việc trong tuần</CardTitle>
                         <CardDescription>07 - 12/04/2025</CardDescription>
                     </CardHeader>
                     <CardContent>
-                        <ChartContainer config={WorkhourchartConfig}>
+                        <ChartContainer config={WorkhourchartConfig}> 
                             <BarChart
                                 accessibilityLayer
                                 data={workHourData}
@@ -258,45 +256,7 @@ export default function AdminTimekeeping() {
                     </CardContent>
 
                 </div>
-                <div className="aspect-video rounded-xl bg-muted/50 p-4" >
-                    <CardHeader>
-                        <CardTitle>Chấm công trong tuần</CardTitle>
-                        <CardDescription>07 - 12/04/2025</CardDescription>
-                    </CardHeader>
-                    <CardContent>
-                        <ChartContainer config={AttendancechartConfig}>
-                            <LineChart
-                                accessibilityLayer
-                                data={attendancetimeData}
-                                margin={{
-                                    left: 12,
-                                    right: 12,
-                                }}
-                            >
-                                <CartesianGrid vertical={false} />
-                                <XAxis
-                                    dataKey="Day"
-                                    tickLine={false}
-                                    axisLine={false}
-                                    tickMargin={8}
-                                    tickFormatter={(value) => value.slice(0, 3)}
-                                />
-                                <ChartTooltip
-                                    cursor={false}
-                                    content={<ChartTooltipContent hideLabel />}
-                                />
-                                <Line
-                                    dataKey="Attendance"
-                                    type="linear"
-                                    stroke="var(--color-desktop)"
-                                    strokeWidth={2}
-                                    dot={false}
-                                />
-                            </LineChart>
-                        </ChartContainer>
-                    </CardContent>
 
-                </div>
 
 
 
@@ -307,7 +267,7 @@ export default function AdminTimekeeping() {
                     placeholder="Tìm kiếm nhân viên..."
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
-                    className="mb-4 w-full max-w-sm"
+                    className="m-4 w-full max-w-sm"
                 />
                 <ScrollArea className="h-[200px] rounded-md border p-4">
                     <Table >

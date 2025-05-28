@@ -37,7 +37,7 @@ public class EmployeeServiceImpl implements EmployeeService {
             if(employee.getPassword() != null) existingEmployee.setPassword(employee.getPassword());
             if(employee.getAge() != null) existingEmployee.setAge(employee.getAge());
             if (employee.getPosition() != null) existingEmployee.setPosition(employee.getPosition());
-
+            if(employee.getStatus() != null) existingEmployee.setStatus(employee.getStatus());
             return employeeRepository.save(existingEmployee);
         }
         return null;

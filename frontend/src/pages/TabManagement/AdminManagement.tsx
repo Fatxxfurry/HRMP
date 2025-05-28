@@ -49,10 +49,6 @@ import axios from "axios"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { Button } from "@/components/ui/button"
 import { useAuth } from "@/context/AuthContext";
-const ActiveUnactiveData = [
-    { status: "active", number: 70, fill: "hsl(var(--chart-1))" },
-    { status: "unactive", number: 30, fill: "hsl(var(--chart-2))" },
-]
 
 const ProjectCompletionchartConfig = {
     finished: {
@@ -98,6 +94,7 @@ interface Task {
 interface Employee {
     id: number,
     name: string,
+    status: boolean,
 }
 export default function AdminManagement() {
     const [searchProject, setSearchProject] = useState("");
@@ -111,12 +108,15 @@ export default function AdminManagement() {
     const [selectedProject, setSelectedProject] = useState<Project | null>(null)
     const [selectedTask, setSelectedTask] = useState<Task | null>(null)
     const [taskData, settaskData] = useState<Task[]>([])
+    const [employeeData, setEmployeeData] = useState<Employee[]>([])
+
     const { user } = useAuth()
     // Lọc dữ liệu theo từ khóa
-   
+    
     useEffect(() => {
         loadProjectsInfo()
         loadEmployeeTaskInfo()
+        loadEmployeeInfo()
     }, [user])
     const loadProjectsInfo = async () => {
         try {
@@ -163,6 +163,18 @@ export default function AdminManagement() {
             console.error('Error fetching employee task info:', error)
         }
     }
+    const loadEmployeeInfo = async () => {
+        try {
+            const response = await axios.get(`http://localhost:8080/api/employees`)
+            if (!response) {
+                throw new Error('Failed to fetch employee info')
+            }
+            const data: Employee[] = response.data
+            setEmployeeData(data)
+        } catch (error) {
+            console.error('Error fetching employee info:', error)
+        }
+    }
     const handleUpdateTaskStatus = (value: string) => {
         const finishedValue = value === 'finished';
 
@@ -180,6 +192,14 @@ export default function AdminManagement() {
                 console.error('Error updating task:', error);
             });
     };
+    const getActiveUnactiveData = (employees: Employee[]) => {
+        const active = employees.filter(employee => employee.status).length
+        const unactive = employees.length - active
+        return [
+            { status: "active", number: active, fill: "hsl(var(--chart-1))" },
+            { status: "unactive", number: unactive, fill: "hsl(var(--chart-2))" },
+        ]
+    }
     const getTaskCompletionData = (tasks: Task[]) => {
         const finished = tasks.filter(task => task.finished).length
         const unfinished = tasks.length - finished
@@ -208,13 +228,19 @@ export default function AdminManagement() {
             { status: "finished", number: 0, fill: "hsl(var(--chart-2))" },
             { status: "unfinished", number: 0, fill: "hsl(var(--chart-3))" },
         ]
+    const ActiveUnactiveData = employeeData
+        ? getActiveUnactiveData(employeeData)
+        : [
+            { status: "active", number: 0, fill: "hsl(var(--chart-1))" },
+            { status: "unactive", number: 0, fill: "hsl(var(--chart-2))" },
+        ]
      const filteredData = projectData.filter((item) =>
-        `${item.id} ${item.name} ${item.status}`
+        `${item.id} ${item?.name} ${item.status}`
             .toLowerCase()
             .includes(searchProject.toLowerCase())
     );
     const TaskfilteredData = taskData.filter((item) =>
-        `${item.id} ${item.name} ${item.status} ${item.name} ${item.end_date}`
+        `${item.id} ${item?.name} ${item.status} ${item?.name} ${item.end_date}`
             .toLowerCase()
             .includes(searchTask.toLowerCase())
     );
@@ -311,7 +337,7 @@ export default function AdminManagement() {
                                     filteredData.map((project) => (
                                         <TableRow key={project.id}>
                                             <TableCell className="font-medium">{project.id}</TableCell>
-                                            <TableCell>{project.name}</TableCell>
+                                            <TableCell>{project?.name}</TableCell>
                                             <TableCell>{project.start_date}</TableCell>
                                             <TableCell>{project.end_date}</TableCell>
                                             <TableCell>
@@ -406,7 +432,7 @@ export default function AdminManagement() {
                                         <TableRow key={task.id}>
                                             <TableCell className="font-medium">{task.id}</TableCell>
                                             <TableCell>{task.description}</TableCell>
-                                            <TableCell>{task.project.name}</TableCell>
+                                            <TableCell>{task.project?.name}</TableCell>
                                             <TableCell>{task.start_date}</TableCell>
                                             <TableCell>{task.end_date}</TableCell>
                                             <TableCell>
