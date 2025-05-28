@@ -30,7 +30,7 @@ const Admindata = {
   },
   teams: [
     {
-      name: "Acme Inc",
+      name: "Công Ty TNHH MotMinhToi",
       logo: GalleryVerticalEnd,
       plan: "Enterprise",
     },

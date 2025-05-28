@@ -94,16 +94,15 @@ export default function EmployeeTimekeeping() {
             setAttendanceData(data);
             const today = new Date().toISOString().split("T")[0];
             const count: number = data.filter((entry: AttendanceData) =>
-                entry.date === today && entry.status === "PRESENT"
+                entry.status === "PRESENT"
             ).length;
             const latecount: number = data.filter((entry: AttendanceData) =>
-                entry.date === today && entry.status === "LATE"
+                entry.status === "LATE"
             ).length;
-            const totalentry: number = data.filter((entry: AttendanceData) =>
-                entry.date === today
-            ).length;
+            const totalentry: number = data.length;
+            console.log("Tổng số ngày có mặt hôm nay:", totalentry);
             const absentcount: number = data.filter((entry: AttendanceData) =>
-                entry.date === today && entry.status === "ABSENT"
+                entry.status === "ABSENT"
             ).length;
             setPresentDay(count);
             setlateDay(latecount);
@@ -206,7 +205,7 @@ export default function EmployeeTimekeeping() {
           </CardContent>
 
         </div>
-        <div className="aspect-video rounded-xl bg-muted/50 p-4" >
+        {/*<div className="aspect-video rounded-xl bg-muted/50 p-4" >
           <CardHeader>
             <CardTitle>Chấm công trong tuần</CardTitle>
             <CardDescription>07 - 12/04/2025</CardDescription>
@@ -244,7 +243,7 @@ export default function EmployeeTimekeeping() {
             </ChartContainer>
           </CardContent>
 
-        </div>
+        </div>*/}
 
 
 
