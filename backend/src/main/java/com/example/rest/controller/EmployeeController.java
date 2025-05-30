@@ -17,6 +17,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.example.rest.model.Employee;
 import com.example.rest.service.EmployeeService;
+import org.springframework.web.bind.annotation.RequestParam;
+
 
 @RestController
 @CrossOrigin
@@ -72,15 +74,17 @@ public class EmployeeController {
  // build delete employee REST API
  	// http://localhost:8080/api/employees/1
  	@DeleteMapping("{id}")
- 	public ResponseEntity<String> deleteEmployee(@PathVariable("id") long id){
- 		
- 		// delete employee from DB
- 		Employee employee = employeeService.getEmployeeById(id);
-		if(employee != null) {
+	public ResponseEntity<String> deleteEmployee(@PathVariable("id") long id) {
+
+		// delete employee from DB
+		Employee employee = employeeService.getEmployeeById(id);
+		if (employee != null) {
 			employeeService.deleteEmployee(id);
-			 return new ResponseEntity<String>("Employee deleted successfully!.", HttpStatus.OK);
+			return new ResponseEntity<String>("Employee deleted successfully!.", HttpStatus.OK);
 		} else {
-			 return new ResponseEntity<String>("Employee not found!", HttpStatus.NOT_FOUND);
+			return new ResponseEntity<String>("Employee not found!", HttpStatus.NOT_FOUND);
 		}
- 	} 
+	}
+
+	
 }

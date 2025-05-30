@@ -3,8 +3,8 @@ package com.example.rest.model;
 import java.time.LocalDate;
 import java.util.List;
 
-import com.example.rest.model.enums.Gender;
 import com.example.rest.model.enums.EmployeeRole;
+import com.example.rest.model.enums.Gender;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import jakarta.persistence.Entity;
@@ -59,7 +59,8 @@ public class Employee {
     private String identification;
 
     
-    
+    private String image;
+ 
     private LocalDate birth_date;
     private String position;
     
