@@ -57,7 +57,7 @@ import { parse } from 'path'
 import { useEffect } from 'react'
 import { useAuth } from '@/context/AuthContext'
 import axios from 'axios'
-
+import { toast } from "sonner"
 
 
 interface Task {
@@ -140,9 +140,10 @@ export default function AdminAssigntask() {
         try {
             const response = await axios.post("http://localhost:8080/api/tasks", payload)
             if (response.status === 200 || response.status === 201) {
-                alert("Create successfully")
+                toast("Phân công task thành công")
+                loadTaskData()
             } else {
-                alert("Create failed")
+                toast("Phân công task thất bại")
             }
         } catch (error) {
             console.error("Error:", error)
@@ -166,15 +167,15 @@ export default function AdminAssigntask() {
             try {
                 const response = await axios.put(`http://localhost:8080/api/tasks/${editTask.id}`, payload)
                 if (response.status === 200) {
-                    alert("Cập nhật task thành công")
+                    toast("Cập nhật task thành công")
                     setShowEditDialog(false)
                     loadTaskData() // Reload task data after update
                 } else {
-                    alert("Cập nhật task thất bại")
+                    toast("Cập nhật task thất bại")
                 }
             } catch (error) {
                 console.error("Error updating task:", error)
-                alert("Lỗi khi cập nhật task")
+                toast("Lỗi khi cập nhật task")
             }
         }
     }
@@ -200,15 +201,15 @@ export default function AdminAssigntask() {
             try {
                 const response = await axios.delete(`http://localhost:8080/api/tasks/${deleteTask.id}`);
                 if (response.status === 200) {
-                    alert("Xoá task thành công");
+                    toast("Xoá task thành công");
                     setShowDeleteDialog(false);
                     loadTaskData(); // Reload task data after deletion
                 } else {
-                    alert("Xoá task thất bại");
+                    toast("Xoá task thất bại");
                 }
             } catch (error) {
                 console.error("Error deleting task:", error);
-                alert("Lỗi khi xoá task");
+                toast("Lỗi khi xoá task");
             }
         }
     }

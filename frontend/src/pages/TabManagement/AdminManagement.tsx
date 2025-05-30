@@ -321,7 +321,7 @@ export default function AdminManagement() {
                     <ScrollArea className=" h-[500px] rounded-md border p-4">
 
                         <Table className="min-w-[500px]" >
-                            <TableCaption>Danh sách tình trạng chấm công của nhân viên.</TableCaption>
+                            <TableCaption>Danh sách dự án.</TableCaption>
                             <TableHeader>
                                 <TableRow>
                                     <TableHead >Mã dự án</TableHead>

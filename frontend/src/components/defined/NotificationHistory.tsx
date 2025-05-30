@@ -23,6 +23,7 @@ export default function NotificationHistory({ Header, Date, Sender, Content, Ema
             senderEmail: Email, // Có thể truyền dynamic nếu có
             department: Department,          // Có thể truyền dynamic nếu có
             content: Content,
+            date: Date,
         }} style={{ textDecoration: 'none' }}>
             <div className="flex flex-row gap-4 p-4 pt-0 m-4 bg-gray-200 rounded-lg">
                 <div className="flex items-center">

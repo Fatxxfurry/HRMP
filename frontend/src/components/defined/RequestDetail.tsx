@@ -5,7 +5,7 @@ import { Separator } from "@/components/ui/separator"
 import { Download } from "lucide-react"
 import { useLocation } from 'react-router'
 import axios from "axios"
-
+import { useAuth } from "@/context/AuthContext"
 export interface RequestDetailProps {
   senderName: string,
   senderContent: string,// Có thể truyền dynamic nếu có
@@ -22,6 +22,8 @@ export default function RequestDetail() {
   const location = useLocation()
   const requestinfo = location.state as RequestDetailProps
   const [status, setStatus] = useState(requestinfo.senderStatus)
+  const { user } = useAuth()
+  const role = user?.role === 'admin' ? 'admin' : 'user';
 
   const handleAccept = async () => {
     const updatedStatus = "APPROVED";
@@ -94,7 +96,7 @@ export default function RequestDetail() {
             </p>
           </div>
           <Separator />
-          {status === "PENDING" && (
+          {(status === "PENDING" && role === 'admin')&&  (
             <div className="flex gap-4 pt-4">
               <Button onClick={handleAccept} className="bg-green-600 hover:bg-green-700">
                 Chấp nhận
