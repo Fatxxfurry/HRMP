@@ -20,6 +20,7 @@ import { Input } from "@/components/ui/input"
 import { useState } from 'react'
 import { useEffect } from 'react'
 import { useAuth } from '@/context/AuthContext'
+import { toast } from "sonner"
 import axios from 'axios'
 interface AddEmployeeProps {
     name: string,
@@ -35,6 +36,7 @@ interface AddEmployeeProps {
     hire_date: string,
     username: string
     password: string,
+    avatar: string,
 }
 
 export default function AddEmployee() {
@@ -52,23 +54,27 @@ export default function AddEmployee() {
         hire_date: "",
         username: "",
         password: "",
+        avatar: "",
     })
     const CreateEmployee = async () => {
         const payload = {
             ...newEmployee,
             department: {
-                id: parseInt(newEmployee.department_id),
+                id: Number(newEmployee.department_id),
             },
         };
 
         // Xoá `department_id` khỏi payload nếu không cần gửi
-        delete (payload as any).department_id;
+        //delete (payload as any).department_id;
 
         try {
             const response = await axios.post("http://localhost:8080/api/employees", payload);
             console.log("Nhân viên đã được tạo:", response.data);
+            toast("Nhân viên đã được tạo thành công!");
+            
         } catch (error) {
             console.error("Lỗi khi tạo nhân viên:", error);
+            toast("Nhân viên đã được tạo thất bại!");
         }
     };
     return (
@@ -82,13 +88,17 @@ export default function AddEmployee() {
                             type="text"
                             id="name"
                             value={newEmployee.name}
+                            placeholder='Nguyễn Văn A'
                             onChange={(e) => setNewEmployee({ ...newEmployee, name: e.target.value })} />
+
                     </div>
                     <div>
                         <Label >Địa chỉ nhân viên</Label>
                         <Input
                             type="text"
                             id="address"
+                            placeholder='Thủ đức, TPHCM'
+
                             value={newEmployee.address}
                             onChange={(e) => setNewEmployee({ ...newEmployee, address: e.target.value })} />
                     </div>
@@ -97,6 +107,7 @@ export default function AddEmployee() {
                         <Input
                             type="text"
                             id="phone"
+                            placeholder='0900123456'
                             value={newEmployee.phone}
                             onChange={(e) => setNewEmployee({ ...newEmployee, phone: e.target.value })} />
                     </div>
@@ -105,6 +116,8 @@ export default function AddEmployee() {
                         <Input
                             type="email"
                             id="email"
+                            placeholder='VanA@gmail.com'
+
                             value={newEmployee.email}
                             onChange={(e) => setNewEmployee({ ...newEmployee, email: e.target.value })} />
                     </div>
@@ -114,6 +127,7 @@ export default function AddEmployee() {
                         <Input
                             type="text"
                             id="department_id"
+                            placeholder='1'
                             value={newEmployee.department_id}
                             onChange={(e) => setNewEmployee({ ...newEmployee, department_id: e.target.value })} />
                     </div>
@@ -123,6 +137,7 @@ export default function AddEmployee() {
                         <Input
                             type="text"
                             id="position"
+                            placeholder='Developer'
                             value={newEmployee.position}
                             onChange={(e) => setNewEmployee({ ...newEmployee, position: e.target.value })} />
                     </div>
@@ -131,23 +146,30 @@ export default function AddEmployee() {
                         <Input
                             type="text"
                             id="role"
+                            placeholder='ROLE_USER, ROLE_MANAGER'
                             value={newEmployee.role}
                             onChange={(e) => setNewEmployee({ ...newEmployee, role: e.target.value })}
                         />
                     </div>
                     <div>
-                        <Label htmlFor="picture">Ảnh đại diện</Label>
-                        <Input id="picture" type="file" placeholder="asd" />
+                        <Label>Ảnh đại diện</Label>
+                        <Input id="picture" type="text" placeholder="https://..." value={newEmployee.avatar}
+                            onChange={(e) => setNewEmployee({ ...newEmployee, avatar: e.target.value })}
+                        />
                     </div>
                     <div>
                         <Label >Giới tính</Label>
                         <Input type="text" id="gender"
                             value={newEmployee.gender}
+                            placeholder='MALE, FEMALE'
+
                             onChange={(e) => setNewEmployee({ ...newEmployee, gender: e.target.value })} />
                     </div>
                     <div>
                         <Label >Căn cước</Label>
                         <Input type="text" id="identification"
+                            placeholder='052204012345'
+
                             value={newEmployee.identification}
                             onChange={(e) => setNewEmployee({ ...newEmployee, identification: e.target.value })}
                         />
@@ -155,12 +177,14 @@ export default function AddEmployee() {
                     <div>
                         <Label >Ngày sinh</Label>
                         <Input type="text" id="birth_date"
+                            placeholder='yyyy-mm-dd'
                             value={newEmployee.birth_date}
                             onChange={(e) => setNewEmployee({ ...newEmployee, birth_date: e.target.value })} />
                     </div>
                     <div>
                         <Label >Ngày bắt đầu làm việc</Label>
                         <Input type="text" id="hire_date"
+                            placeholder='yyyy-mm-dd'
                             value={newEmployee.hire_date}
                             onChange={(e) => setNewEmployee({ ...newEmployee, hire_date: e.target.value })}
                         />

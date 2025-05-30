@@ -1,6 +1,6 @@
 //Employee Request: Form request cho nhân viên
 
-import React from 'react'
+import React, { use } from 'react'
 import {
     Form,
     FormControl,
@@ -30,12 +30,34 @@ import { Button } from '@/components/ui/button'
 import { useAuth } from '@/context/AuthContext'
 import { useEffect } from 'react'
 import axios from "axios"
+import { toast } from "sonner"
+import RequestHistory from '@/components/defined/RequestHistory'
+interface request {
+    id: number
+    name: string,
+    requestDate: string,
+    description: string,
+    employee: {
+        id: number,
+        name: string,
+    }
+    department: {
+        name: string,
+        managerId: number
+    },
+    status: string
+}
 export default function EmployeeRequest() {
     const [newtitle, setnewtitle] = useState("");
     const [newReceiver, setNewReceiver] = useState("");
     const [newContent, setnewContent] = useState("");
     const { user } = useAuth();
-    
+    const [myrequest, setmyrequest] = useState<request[]>([]);
+    useEffect(() => {
+        if (user?.id) {
+            loadMyRequest();
+        }
+    }, [user?.id])
     const setNewRequest = async () => {
         try {
             const today = new Date();
@@ -54,16 +76,31 @@ export default function EmployeeRequest() {
             console.log("payload:", payload)
             const response = await axios.post("http://localhost:8080/api/requests", payload);
             if (response.status === 201 || response.status === 200) {
-                alert('Thông báo đã được tạo thành công!');
+                toast('Yêu cầu đã được tạo thành công!');
                 setnewtitle('');
                 setNewReceiver('');
                 setnewContent('');
             } else {
-                throw new Error('Lỗi khi gửi thông báo');
+                throw new Error('Lỗi khi gửi yêu cầu');
             }
         } catch (error) {
-            console.error('Lỗi khi thêm thông báo:', error);
-            alert('Gửi thông báo thất bại.');
+            console.error('Lỗi khi thêm yêu cầu:', error);
+            toast('Gửi yêu cầu thất bại.');
+        }
+    }
+    const loadMyRequest = async () => {
+        try {
+            const response = await axios.get(`http://localhost:8080/api/requests`);
+            const allRequests: request[] = response.data
+            const filtereddata = allRequests.filter(request => request.employee?.id === user?.id)
+
+            if (!response) {
+                throw new Error('Failed to fetch employee request info');
+            }
+            console.log("my request: ", allRequests);
+            setmyrequest(filtereddata);
+        } catch (error) {
+            console.error("Lỗi khi tải yêu cầu:", error);
         }
     }
     return (
@@ -113,6 +150,25 @@ export default function EmployeeRequest() {
                         <Button type="submit" onClick={setNewRequest}>Gửi yêu cầu</Button>
                     </div>
                 </div>
+            </div>
+            <div className="min-h-[100vh] flex-1 rounded-xl bg-muted/50 md:min-h-min" >
+                {myrequest.length > 0 ? (
+                    myrequest.map((request) => (
+                        <RequestHistory
+                            key={request.id}
+                            requestID={request.id}
+                            Header={request.name}
+                            Date={request.requestDate}
+                            Sender={request?.employee.name || "Unknown"}
+                            Content={request.description}
+                            Status={request.status}
+                            Department={request?.department?.name || "Unknown"}
+                        />
+                    ))
+                ) : (
+                    <div className="p-4 text-gray-500">No notifications found.</div>
+                )}
+
             </div>
         </div>)
 }

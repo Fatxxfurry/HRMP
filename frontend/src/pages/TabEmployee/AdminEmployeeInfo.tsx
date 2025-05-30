@@ -37,6 +37,7 @@ interface Employee {
     birth_date: any,
     hire_date: any,
     department: Department
+    avatar: string
 }
 export default function AdminEmployeeInfo() {
     const { id } = useParams<{ id: string }>();
@@ -73,7 +74,7 @@ export default function AdminEmployeeInfo() {
                             <div className='flex flex-row items-center justify-center '>
                                 <div className="flex flex-row items-center justify-center">
                                     <Avatar className="w-32 h-32">
-                                        <AvatarImage src="https://github.com/shadcn.png" />
+                                        <AvatarImage src={employee.avatar} />
                                         <AvatarFallback>CN</AvatarFallback>
                                     </Avatar>
 

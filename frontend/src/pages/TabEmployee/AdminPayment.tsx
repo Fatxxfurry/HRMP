@@ -223,6 +223,7 @@ export default function AdminPayment() {
                                 <TableHead>Thưởng</TableHead>
                                 <TableHead>Phạt</TableHead>
                                 <TableHead>Tổng cộng</TableHead>
+                                <TableHead>Ngày dự kiến nhận</TableHead>
                                 <TableHead>Thao tác</TableHead>
                             </TableRow>
                         </TableHeader>
@@ -239,6 +240,8 @@ export default function AdminPayment() {
                                             <TableCell>{salary.bonus}</TableCell>
                                             <TableCell>{salary.minus}</TableCell>
                                             <TableCell>{salary.total_salary}</TableCell>
+                                            <TableCell>{salary.date_paid}</TableCell>
+
                                             <TableCell className="space-x-2">
                                                 <Button variant="outline" size="sm" onClick={(event) => {
                                                     event.stopPropagation();
@@ -287,8 +290,8 @@ export default function AdminPayment() {
                     </Table>
                 </ScrollArea>
                 <Link to='/admin/add-salary'>
-                    <Button variant="outline" size="sm" >
-                        Thêm nhân viên
+                    <Button variant="outline" size="sm" className="mt-4" >
+                        Thêm kế hoạch nhận lương
                     </Button>
                 </Link>
             </div>

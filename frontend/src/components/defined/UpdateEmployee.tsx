@@ -22,6 +22,7 @@ import { useEffect } from 'react'
 import { useAuth } from '@/context/AuthContext'
 import { useParams } from 'react-router'
 import axios from 'axios'
+import { toast } from "sonner"
     interface UpdateEmployeeProps {
         name: string,
         address: string,
@@ -72,8 +73,11 @@ export default function UpdateEmployee() {
         try {
             const response = await axios.put(`http://localhost:8080/api/employees/${id}`, Employee);
             console.log("Nhân viên đã được cập nhật:", response.data);
+            toast("Nhân viên đã được cập nhật thành công!");
         } catch (error) {
             console.error("Lỗi khi cập nhật nhân viên:", error);
+            toast("Thất bại khi cập nhật nhân viên!");
+
         }
     }
   

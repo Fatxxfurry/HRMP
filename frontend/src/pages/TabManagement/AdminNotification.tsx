@@ -31,6 +31,7 @@ import {
 } from "@/components/ui/select"
 import { Label } from "@/components/ui/label"
 import axios from "axios"
+import { toast } from "sonner"
 interface notification {
     employeeId: number,
     notificationContent: string,
@@ -99,7 +100,7 @@ export default function AdminNotification() {
             console.log("payload:", payload)
             const response = await axios.post("http://localhost:8080/api/notifications", payload);
             if (response.status === 201 || response.status === 200) {
-                alert('Thông báo đã được tạo thành công!');
+                toast('Thông báo đã được tạo thành công!');
                 setNewcontent('');
                 setNewtitle('');
                 setNewNotificationType('');
@@ -109,7 +110,7 @@ export default function AdminNotification() {
             }
         } catch (error) {
             console.error('Lỗi khi thêm thông báo:', error);
-            alert('Gửi thông báo thất bại.');
+            toast('Gửi thông báo thất bại.');
         }
     }
     const formatDateTime = (dateString: string) => {
@@ -125,8 +126,8 @@ export default function AdminNotification() {
     return (
 
         <div className="flex flex-1 flex-col gap-4 p-4 pt-0">
-            <div className="min-h-[100vh] flex-1 rounded-xl bg-muted/50 md:min-h-min p-4" >
-                <div>
+            <div className="min-h-[100vh] flex-1 rounded-xl bg-muted/50 md:min-h-min p-4 " >
+                <div className='text-center font-bold text-lg mb-4'>
                     <Label >Tiêu đề</Label>
                     <Input
                         type="text"
@@ -136,7 +137,7 @@ export default function AdminNotification() {
                     />
                 </div>
 
-                <div>
+                <div className='text-center font-bold text-lg mb-4'>
                     <Label>Chọn loại thông báo</Label>
                     <Select
                         onValueChange={(value) => setNewNotificationType(value)}
@@ -156,7 +157,7 @@ export default function AdminNotification() {
                     </Select>
                 </div>
 
-                <div>
+                <div className='text-center text-lg mb-4'>
                     <Label>Nội dung</Label>
                     <Textarea
                         id="content"

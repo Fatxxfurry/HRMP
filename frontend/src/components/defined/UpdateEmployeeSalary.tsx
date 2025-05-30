@@ -22,6 +22,7 @@ import { useEffect } from 'react'
 import { useAuth } from '@/context/AuthContext'
 import { useParams } from 'react-router'
 import axios from 'axios'
+import { toast } from "sonner"
 interface Salary {
     basic_salary: string,
     bonus: string,
@@ -60,9 +61,9 @@ export default function UpdateEmployeeSalary() {
         
         try {
             const response = await axios.put(`http://localhost:8080/api/salaries/${id}`, EmployeeSalary);
-            alert("lương Nhân viên đã được cập nhật:");
+            toast("lương Nhân viên đã được cập nhật:");
         } catch (error) {
-            alert("Lỗi khi cập nhật lương nhân viên:");
+            toast("Lỗi khi cập nhật lương nhân viên:");
         }
     }
 
