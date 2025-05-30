@@ -7,16 +7,27 @@ interface NotificationHistoryProps {
     Date?: string; // hoặc kiểu phù hợp tùy vào cách bạn dùng
     Sender?: string; // hoặc kiểu phù hợp tùy vào cách bạn dùng
     Status?: string;
+    Content?: string;
+    Department?: string;
+    requestID: number;
 }
 
-export default function RequestHistory({ Header, Date, Sender, Status }: NotificationHistoryProps) {
+export default function RequestHistory({ requestID, Header, Date, Sender, Status, Content, Department }: NotificationHistoryProps) {
     const { user } = useAuth();
 
     const role = user?.role === 'admin' ? 'admin' : 'user';
     const path = `/${role}/request-detail`;
-
+    console.log("ID", requestID)
     return (
-        <Link to={path} style={{ textDecoration: 'none' }}>
+        <Link to={path} state={{
+            requestsID: requestID,
+            senderName: Sender,
+            senderContent:  Content,// Có thể truyền dynamic nếu có
+            senderdepartment: Department,          // Có thể truyền dynamic nếu có
+            senderStatus: Status,
+            senderHeader: Header,
+            senderDate: Date
+        }} style={{ textDecoration: 'none' }}>
             <div className="flex flex-row gap-4 p-4 pt-0 m-4 bg-gray-200 rounded-lg">
                 <div className="flex items-center">
                     <Bell />

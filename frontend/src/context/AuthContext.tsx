@@ -60,13 +60,16 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         role: data.role,
       }
       console.log("Logged in user:", loggedInUser)
-      if(loggedInUser.role === "ROLE_MANAGER") {
+      if (loggedInUser.role === "ROLE_MANAGER") {
         loggedInUser.role = "admin"
-      } else if(loggedInUser.role === "ROLE_USER") {
+      } else if (loggedInUser.role === "ROLE_USER") {
         loggedInUser.role = "user"
       }
-      
 
+      // update status 
+      await axios.put(`http://localhost:8080/api/employees/${loggedInUser.id}`, {
+        status: true,
+      })
       // Set user in state and localStorage
       setUser(loggedInUser)
       localStorage.setItem("user", JSON.stringify(loggedInUser))
@@ -76,19 +79,25 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         console.error("API Error response:", error.response?.data)
       }
       throw error
-  } finally {
-    setLoading(false)
+    } finally {
+      setLoading(false)
+    }
   }
-}
 
 
-// Logout function
-const logout = () => {
-  setUser(null)
-  localStorage.removeItem("user")
-}
+  // Logout function
+  const logout = async () => {
+    if (user) {
+      await axios.put(`http://localhost:8080/api/employees/${user.id}`, {
+        status: false,
+      })
+    }
 
-return <AuthContext.Provider value={{ user, loading, login, logout }}>{children}</AuthContext.Provider>
+    setUser(null)
+    localStorage.removeItem("user")
+  }
+
+  return <AuthContext.Provider value={{ user, loading, login, logout }}>{children}</AuthContext.Provider>
 }
 
 // Custom hook to use auth context

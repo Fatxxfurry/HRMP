@@ -12,6 +12,7 @@ import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
 
+import com.example.rest.model.Employee;
 import com.example.rest.model.FaceEncoding;
 import com.example.rest.repository.FaceEncodingRepository;
 import com.example.rest.service.FaceEncodingService;
@@ -28,10 +29,24 @@ public class FaceEncodingServiceImpl implements FaceEncodingService {
         this.faceEncodingRepository = faceEncodingRepository;}
 
 
-    @Override
-    public FaceEncoding createFaceEncoding(FaceEncoding faceEncoding) {
-        return faceEncodingRepository.save(faceEncoding);
-    }
+        @Override
+        public FaceEncoding createFaceEncoding(Employee employee, String encodingJson) {
+            FaceEncoding existingFaceEncoding = faceEncodingRepository.findFirstByEmployee(employee);
+            if (existingFaceEncoding != null) {
+                existingFaceEncoding.setEncodingJson(encodingJson);
+                return faceEncodingRepository.save(existingFaceEncoding);
+            }
+            FaceEncoding faceEncoding = new FaceEncoding();
+            faceEncoding.setEmployee(employee);
+            faceEncoding.setEncodingJson(encodingJson);
+
+            ResponseEntity<String> response = restTemplate.getForEntity(
+                    "http://127.0.0.1:5000/get-encodings",
+                    String.class
+            );
+
+            return faceEncodingRepository.save(faceEncoding);
+        }
     @Override
     public String getEncodingCodeFromPython(byte[] image) {
         HttpHeaders headers = new HttpHeaders();
@@ -69,6 +84,10 @@ public class FaceEncodingServiceImpl implements FaceEncodingService {
 
     @Override
     public void deleteFaceEncoding(Long id) {
+                    ResponseEntity<String> response = restTemplate.getForEntity(
+                    "http://127.0.0.1:5000/get-encodings",
+                    String.class
+            );
         faceEncodingRepository.deleteById(id);
     }
 }

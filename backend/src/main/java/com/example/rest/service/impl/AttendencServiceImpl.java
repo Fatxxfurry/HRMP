@@ -75,21 +75,33 @@ public class AttendencServiceImpl implements AttendenceService {
 
     @Override
     public AttendenceStatus calculateStatus(Employee employee, LocalDate date, LocalTime checkInTime) {
-    boolean isOnLeave = !leaveRequestRepository
-        .findApprovedLeaveByEmployeeAndDate(employee.getId(), date)
-        .isEmpty();
+        boolean isOnLeave = !leaveRequestRepository
+                .findApprovedLeaveByEmployeeAndDate(employee.getId(), date)
+                .isEmpty();
 
-    if (isOnLeave) {
-        return AttendenceStatus.ON_LEAVE;
+        if (isOnLeave) {
+            return AttendenceStatus.ON_LEAVE;
+        }
+
+        if (checkInTime == null) {
+            return AttendenceStatus.ABSENT;
+        }
+
+        return checkInTime.isAfter(LocalTime.of(8, 0))
+                ? AttendenceStatus.LATE
+                : AttendenceStatus.PRESENT;
     }
-
-    if (checkInTime == null) {
-        return AttendenceStatus.ABSENT;
-    }
-
-    return checkInTime.isAfter(LocalTime.of(8, 0)) 
-        ? AttendenceStatus.LATE 
-        : AttendenceStatus.PRESENT;
+    @Override
+    public Attendence markAttendence(Employee employee) {
+        if (attendenceRepository.findByEmployeeAndDate(employee, LocalDate.now()).isEmpty()) {
+            Attendence attendence = new Attendence();
+            attendence.setEmployee(employee);
+            attendence.setDate(LocalDate.now());
+            attendence.setCheckInTime(LocalTime.now());
+            attendence.setStatus(calculateStatus(employee, LocalDate.now(), LocalTime.now()));
+            return attendenceRepository.save(attendence);
+        }
+        return attendenceRepository.findByEmployeeAndDate(employee, LocalDate.now()).get(0);
     }
 }
 

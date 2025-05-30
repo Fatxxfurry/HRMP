@@ -9,9 +9,9 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-
+import { Link } from "react-router"
 export default function Login() {
-  const { login, user  } = useAuth()
+  const { login, user } = useAuth()
   const navigate = useNavigate()
   const [username, setUsername] = useState("")
   const [password, setPassword] = useState("")
@@ -41,6 +41,10 @@ export default function Login() {
       }
     }
   }, [user, navigate]);
+  const handleFaceRecognitionLogin = () => {
+    navigate('/face-recognition');
+
+  }
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-100 px-4">
@@ -60,7 +64,6 @@ export default function Login() {
                 value={username}
                 onChange={(e) => setUsername(e.target.value)}
                 placeholder="username"
-                required
               />
             </div>
             <div className="grid gap-2">
@@ -75,11 +78,13 @@ export default function Login() {
                 type="password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                required
               />
             </div>
             <Button type="submit" className="w-full" disabled={isLoading}>
               {isLoading ? "Đang đăng nhập..." : "Đăng nhập"}
+            </Button>
+            <Button type="submit" className="w-full" onClick={handleFaceRecognitionLogin}>
+              Đăng nhập bằng nhận diện khuôn mặt
             </Button>
           </form>
         </CardContent>

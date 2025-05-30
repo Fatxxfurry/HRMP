@@ -14,9 +14,11 @@ import com.example.rest.service.CalendarService;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 
 @RestController
+@CrossOrigin
 @RequestMapping("/api/calendars")
 public class CalendarController {
     @Autowired

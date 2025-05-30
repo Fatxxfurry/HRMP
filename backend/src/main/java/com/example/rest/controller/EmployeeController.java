@@ -15,9 +15,15 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import org.springframework.web.multipart.MultipartFile;
+
 import com.example.rest.model.Employee;
 import com.example.rest.service.EmployeeService;
+
 import org.springframework.web.bind.annotation.RequestParam;
+
+import com.example.rest.model.FaceEncoding;
+import com.example.rest.service.FaceEncodingService;
 
 
 @RestController
@@ -25,11 +31,13 @@ import org.springframework.web.bind.annotation.RequestParam;
 @RequestMapping("/api/employees")
 public class EmployeeController {
 	@Autowired
-	private EmployeeService	employeeService;
+	private EmployeeService employeeService;
+	private FaceEncodingService faceEncodingService;
 
-	public EmployeeController(EmployeeService employeeService) {
+	public EmployeeController(EmployeeService employeeService, FaceEncodingService faceEncodingService) {
 		super();
 		this.employeeService = employeeService;
+		this.faceEncodingService = faceEncodingService;
 	}
 	   
 	//Build Create employee RestApi
@@ -85,6 +93,18 @@ public class EmployeeController {
 			return new ResponseEntity<String>("Employee not found!", HttpStatus.NOT_FOUND);
 		}
 	}
-
+ 	
+ 	@PostMapping("{id}/image")
+ 	public ResponseEntity<String> uploadImage(@PathVariable("id") long id, @RequestParam("image") MultipartFile file) throws Exception {
+		Employee employee = employeeService.getEmployeeById(id);
+		if(employee != null && !file.isEmpty()) {
+			 String encodedImage = faceEncodingService.getEncodingCodeFromPython(file.getBytes());
+			 faceEncodingService.createFaceEncoding(employee, encodedImage);
+ 			employee = employeeService.updateImage(employee, file);
+ 			return new ResponseEntity<String>("Image uploaded successfully!.", HttpStatus.OK);
+ 		} else {
+ 			return new ResponseEntity<String>("Employee not found!", HttpStatus.NOT_FOUND);
+ 		}
+ 	}
 	
 }
