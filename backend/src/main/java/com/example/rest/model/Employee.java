@@ -65,6 +65,7 @@ public class Employee {
     
     private LocalDate hire_date;
     private Boolean status;
+    private String avatar;
     @ManyToOne
     @JoinColumn(name = "department_id",referencedColumnName="id")
     private Department department;

@@ -36,7 +36,8 @@ interface Employee {
     identification: string,
     birth_date: any,
     hire_date: any,
-    department: Department
+    department: Department,
+    avatar: string
 }
 export default function EmployeeInfo() {
     const [employee, setEmployee] = useState<Employee | null>(null);
@@ -71,7 +72,7 @@ export default function EmployeeInfo() {
                         <div className='flex flex-row items-center justify-center '>
                             <div className="flex flex-row items-center justify-center">
                                 <Avatar className="w-32 h-32">
-                                    <AvatarImage src="https://github.com/shadcn.png" />
+                                    <AvatarImage src={employee.avatar} />
                                     <AvatarFallback>CN</AvatarFallback>
                                 </Avatar>
                                 

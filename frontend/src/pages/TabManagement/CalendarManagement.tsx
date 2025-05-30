@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { gapi } from 'gapi-script';
 import { initGoogleAPI } from '@/context/GoogleAPI';
-
+import { toast } from 'sonner';
 export default function CalendarManagement() {
   const FIXED_CALENDAR_ID =
     'c_0deb9907774fbe70a967417ad86eebd3cf8ea308b1c89fb0b6a4b0e7d43b1781@group.calendar.google.com';
@@ -10,6 +10,8 @@ export default function CalendarManagement() {
   const [eventTitle, setEventTitle] = useState('');
   const [eventStartDate, setEventStartDate] = useState('');
   const [eventEndDate, setEventEndDate] = useState('');
+  const [iframeKey, setIframeKey] = useState(0); // key để buộc reload
+
   useEffect(() => {
     initGoogleAPI().catch(console.error);
   }, []);
@@ -24,7 +26,7 @@ export default function CalendarManagement() {
     await handleLogin();
 
     if (!eventStartDate || !eventEndDate) {
-      alert('Vui lòng nhập thời gian bắt đầu và kết thúc');
+      toast('Vui lòng nhập thời gian bắt đầu và kết thúc');
       return;
     }
 
@@ -40,12 +42,17 @@ export default function CalendarManagement() {
         resource: event,
       });
       console.log('Event created:', response);
-      alert('Tạo sự kiện thành công!');
+      toast('Tạo sự kiện thành công!');
+
+      // ✅ Reload iframe bằng cách đổi key
+      setIframeKey(prev => prev + 1);
+
     } catch (error) {
       console.error(error);
-      alert('Tạo sự kiện thất bại.');
+      toast('Tạo sự kiện thất bại.');
     }
   };
+
 
   const getFixedEmbedUrl = () => {
     return `https://calendar.google.com/calendar/embed?src=${FIXED_CALENDAR_ID}&ctz=${TIMEZONE}`;
@@ -85,10 +92,12 @@ export default function CalendarManagement() {
           Tạo sự kiện
         </button>
       </div>
-        <div className="space-y-4">
+      <div className="space-y-4">
         <h2 className="text-lg font-semibold">Lịch công khai</h2>
         <div className="w-full h-[800px]">
           <iframe
+            key={iframeKey} // dùng key để buộc React render lại iframe
+
             title="Google Calendar View"
             src={getFixedEmbedUrl()}
             className="w-full h-full border rounded"
