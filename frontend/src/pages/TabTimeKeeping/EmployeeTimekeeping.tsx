@@ -5,7 +5,11 @@
 import * as React from "react"
 
 import { Bar, BarChart, CartesianGrid, LabelList, XAxis, Line, LineChart, } from "recharts"
-
+import { useState } from "react";
+import { Input } from "@/components/ui/input";
+import { useEffect } from "react";
+import { useAuth } from "@/context/AuthContext"
+import axios from "axios"
 
 import {
   CardContent,
@@ -52,29 +56,113 @@ const AttendancechartConfig = {
 } satisfies ChartConfig
 
 
-
+interface AttendanceData {
+    id: number,
+    date: string,
+    checkInTime: string,
+    checkOutTime: string,
+    status: string,
+    employee: Employee
+}
+interface Employee {
+    id: number;
+    name: string;
+}
+interface WorkHourItem {
+    Day: string;
+    Hour: number;
+}
+const daysOfWeek = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
 
 export default function EmployeeTimekeeping() {
+  const [attendanceData, setAttendanceData] = useState<AttendanceData[]>([]);
+  const [presentDay, setPresentDay] = useState(0);
+  const [lateDay, setlateDay] = useState(0);
+  const [attendanceRate, setAttendanceRate] = useState(0);
+  const [absentDay, setAbsentDay] = useState(0);
+    const [workHourData, setWorkHourData] = useState<WorkHourItem[]>([]);
+  const { user } = useAuth()
 
+    useEffect(() => {
+        loadAttendanceData();
+    }, [user]);
+    const loadAttendanceData = async () => {
+        try {
+            const response = await axios.get("http://localhost:8080/api/attendence");
+            const alldata: AttendanceData[] = response.data;
+            const data = alldata.filter((entry) => entry.employee.id === user?.id);
+            setAttendanceData(data);
+            const today = new Date().toISOString().split("T")[0];
+            const count: number = data.filter((entry: AttendanceData) =>
+                entry.status === "PRESENT"
+            ).length;
+            const latecount: number = data.filter((entry: AttendanceData) =>
+                entry.status === "LATE"
+            ).length;
+            const totalentry: number = data.length;
+            console.log("Tổng số ngày có mặt hôm nay:", totalentry);
+            const absentcount: number = data.filter((entry: AttendanceData) =>
+                entry.status === "ABSENT"
+            ).length;
+            setPresentDay(count);
+            setlateDay(latecount);
+            setAbsentDay(absentcount);
+            setAttendanceRate((count / totalentry) * 100);
+            console.log("Số ngày có mặt hôm nay:", count);
+            const hourMap: { [day: string]: number } = {
+                Sunday: 0,
+                Monday: 0,
+                Tuesday: 0,
+                Wednesday: 0,
+                Thursday: 0,
+                Friday: 0,
+                Saturday: 0,
+            };
+             data.forEach((entry) => {
+                if (entry.status !== "PRESENT") return;
+
+                const dateObj = new Date(entry.date);
+                const dayName = daysOfWeek[dateObj.getDay()];
+
+                const checkIn = new Date(`${entry.date}T${entry.checkInTime}`);
+                const checkOut = new Date(`${entry.date}T${entry.checkOutTime}`);
+                const diffHours = (checkOut.getTime() - checkIn.getTime()) / (1000 * 60 * 60);
+
+                // Chỉ cộng nếu hợp lệ
+                if (!isNaN(diffHours) && diffHours > 0) {
+                    hourMap[dayName] += diffHours;
+                }
+            });
+
+            const finalData: WorkHourItem[] = daysOfWeek.map((day) => ({
+                Day: day,
+                Hour: Math.round(hourMap[day] * 100) / 100, // làm tròn 2 chữ số thập phân
+            }));
+
+            setWorkHourData(finalData);
+        } catch (error) {
+            console.error("Error fetching attendance data:", error);
+        }
+    }
   return (
     <div className="flex flex-1 flex-col gap-4 p-4 pt-0">
       <div className="grid auto-rows-min gap-4 md:grid-cols-4">
         <div className="aspect-video rounded-xl bg-muted/50 p-4" >
           <span className="font-bold block text-green-500">Đúng giờ</span>
-          <span className="block text-5xl text-green-500">0</span>
+          <span className="block text-5xl text-green-500">{presentDay}</span>
         </div>
         <div className="aspect-video rounded-xl bg-muted/50 p-4" >
           <span className="font-bold block text-red-500">Đi muộn </span>
-          <span className="block text-5xl text-red-500">1</span>
+          <span className="block text-5xl text-red-500">{lateDay}</span>
         </div>
         <div className="aspect-video rounded-xl bg-muted/50 p-4 " >
           <span className="font-bold block text-cyan-500">Tỉ lệ tham gia </span>
-          <span className="block text-5xl text-cyan-500">50%</span>
+          <span className="block text-5xl text-cyan-500">{attendanceRate}</span>
         </div>
 
         <div className="aspect-video rounded-xl bg-muted/50 p-4" >
-          <span className="font-bold block text-blue-500">Nghỉ phép </span>
-          <span className="block text-5xl text-blue-500">1</span>
+          <span className="font-bold block text-blue-500">Nghỉ phép / vắng</span>
+          <span className="block text-5xl text-blue-500">{absentDay}</span>
         </div>
       </div>
       <div className="grid auto-rows-min gap-4 md:grid-cols-2">
@@ -87,7 +175,7 @@ export default function EmployeeTimekeeping() {
             <ChartContainer config={WorkhourchartConfig}>
               <BarChart
                 accessibilityLayer
-                data={WorkhourData}
+                data={workHourData}
                 margin={{
                   top: 20,
                 }}
@@ -117,7 +205,7 @@ export default function EmployeeTimekeeping() {
           </CardContent>
 
         </div>
-        <div className="aspect-video rounded-xl bg-muted/50 p-4" >
+        {/*<div className="aspect-video rounded-xl bg-muted/50 p-4" >
           <CardHeader>
             <CardTitle>Chấm công trong tuần</CardTitle>
             <CardDescription>07 - 12/04/2025</CardDescription>
@@ -155,13 +243,13 @@ export default function EmployeeTimekeeping() {
             </ChartContainer>
           </CardContent>
 
-        </div>
- 
-      
+        </div>*/}
+
+
 
       </div>
-          
-   
+
+
     </div>
   )
 }

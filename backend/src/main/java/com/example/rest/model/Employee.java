@@ -58,13 +58,13 @@ public class Employee {
 
     private String identification;
 
-    
+    private String username;
     
     private LocalDate birth_date;
     private String position;
     
     private LocalDate hire_date;
-
+    private Boolean status;
     @ManyToOne
     @JoinColumn(name = "department_id",referencedColumnName="id")
     private Department department;

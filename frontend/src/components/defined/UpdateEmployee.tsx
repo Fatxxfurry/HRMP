@@ -22,20 +22,20 @@ import { useEffect } from 'react'
 import { useAuth } from '@/context/AuthContext'
 import { useParams } from 'react-router'
 import axios from 'axios'
-interface UpdateEmployeeProps {
-    name: string,
-    address: string,
-    phone: string,
-    email: string,
-    position: string,
-    role: string,
-    gender: string,
-    identification: string,
-    birth_date: string,
-    hire_date: string,
-    username: string
-    password: string,
-}
+    interface UpdateEmployeeProps {
+        name: string,
+        address: string,
+        phone: string,
+        email: string,
+        position: string,
+        role: string,
+        gender: string,
+        identification: string,
+        birth_date: string,
+        hire_date: string,
+        username: string
+        password: string,
+    }
 
 export default function UpdateEmployee() {
     const [Employee, setEmployee] = useState<UpdateEmployeeProps>({
@@ -80,7 +80,7 @@ export default function UpdateEmployee() {
     return (
         <div className="flex flex-1 flex-col gap-4 p-4">
             <div className="min-h-[100vh] flex-1 rounded-xl bg-muted/50 md:min-h-min p-4" >
-                <span className="font-bold block text-center mb-4">Thêm nhân viên</span>
+                <span className="font-bold block text-center mb-4">Sửa thông tin nhân viên</span>
                 <div className="grid auto-rows-min gap-4 md:grid-cols-2">
                     <div>
                         <Label >Tên nhân viên</Label>

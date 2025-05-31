@@ -25,6 +25,10 @@ import EmployeeNotification from "@/pages/TabManagement/EmployeeNotification";
 import Unauthorized from "@/components/defined/Unauthorized";
 import AdminEmployeeInfo from "@/pages/TabEmployee/AdminEmployeeInfo";
 import UpdateEmployee from "@/components/defined/UpdateEmployee";
+import UpdateEmployeeSalary from "@/components/defined/UpdateEmployeeSalary";
+import AddSalary from "@/components/defined/AddSalary";
+import FaceRecognition from "@/components/defined/FaceRecognition";
+import EmployeeCalendar from "@/pages/TabManagement/EmployeeCalendar";
 const router = createBrowserRouter([
   {
     path: "/",
@@ -33,6 +37,10 @@ const router = createBrowserRouter([
   {
     path: "/login",
     element: <Login />,
+  },
+   {
+    path: "/face-recognition",
+    element: <FaceRecognition />,
   },
   {
     path: "/admin",
@@ -96,6 +104,18 @@ const router = createBrowserRouter([
           {
             path:"edit-employee/:id",
             element: <UpdateEmployee />,
+          },
+          {
+            path: "edit-salary/:id",
+            element: <UpdateEmployeeSalary/>
+          },
+          {
+            path: "add-salary/",
+            element: <AddSalary/>
+          },
+          {
+            path: "calendar",
+            element: <CalendarManagement />,
           }
         ],
       },
@@ -151,6 +171,10 @@ const router = createBrowserRouter([
           {
             path: "request-detail",
             element: <RequestDetail />,
+          },
+          {
+            path: "calendar",
+            element: <EmployeeCalendar />,
           },
         ],
       },

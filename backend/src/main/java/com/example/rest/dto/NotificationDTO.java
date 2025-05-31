@@ -20,4 +20,5 @@ public class NotificationDTO {
     private NotificationStatus status;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
+    private String title;
 } 
