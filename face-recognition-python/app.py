@@ -14,18 +14,6 @@ data = resp.json()
 known_face_ids = [d['employee']['id'] for d in data]
 known_face_encodings = [np.array(json.loads(d['encodingJson'])['encoding'], dtype=np.float32) for d in data]
 
-@app.route('/recognize', methods=['POST'])
-def recognize():
-    file = request.files['image']
-    img = face_recognition.load_image_file( file)
-    faces = face_recognition.face_encodings(img)
-
-    for face in faces:
-        matches = face_recognition.compare_faces(known_face_encodings, face)
-        if True in matches:
-            matched_idx = matches.index(True)
-            return jsonify({"employeeId": known_face_ids[matched_idx]})
-    return jsonify({"employeeId": None}), 404
 
 @app.route('/encode', methods=['POST'])
 def encode_face():
@@ -55,5 +43,19 @@ def get_encodings():
     global known_face_ids, known_face_encodings
     known_face_ids = [d['employee']['id'] for d in data]
     known_face_encodings = [np.array(json.loads(d['encodingJson'])['encoding'], dtype=np.float32) for d in data]
-    
+    return jsonify({'message': 'Done!'})
+
+@app.route('/recognize', methods=['POST'])
+def recognize():
+    file = request.files['image']
+    img = face_recognition.load_image_file( file)
+    faces = face_recognition.face_encodings(img)
+
+    for face in faces:
+        matches = face_recognition.compare_faces(known_face_encodings, face)
+        if True in matches:
+            matched_idx = matches.index(True)
+            return jsonify({"employeeId": known_face_ids[matched_idx]})
+    return jsonify({"employeeId": None}), 200
+
 app.run(debug=True)
