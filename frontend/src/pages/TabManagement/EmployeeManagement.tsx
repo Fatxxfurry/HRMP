@@ -155,7 +155,7 @@ export default function EmployeeManagement() {
             });
     };
 
-
+    
     const handleSelectChange = (value: string) => {
         const project = projects.find(p => p.name === value);
         if (project) setSelectedProject(project);
@@ -182,7 +182,7 @@ export default function EmployeeManagement() {
                 <div className="aspect-video rounded-xl bg-muted/50">
                     <CardHeader className="items-center pb-0">
                         <CardTitle>Tiến độ dự án</CardTitle>
-                        <CardDescription>January - June 2024</CardDescription>
+                        <CardDescription></CardDescription>
                         <div className="w-full mt-4">
                             <Select onValueChange={handleSelectChange} defaultValue={selectedProject.name}>
                                 <SelectTrigger>
@@ -217,7 +217,7 @@ export default function EmployeeManagement() {
                 <div className="aspect-video rounded-xl bg-muted/50" >
                     <CardHeader className="items-center pb-0">
                         <CardTitle>Tổng số task đã hoàn thành</CardTitle>
-                        <CardDescription>January - June 2024</CardDescription>
+                        <CardDescription></CardDescription>
                         <div className="w-full mt-4"></div>
                     </CardHeader>
                     <CardContent className="flex-1 pb-0">

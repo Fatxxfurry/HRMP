@@ -80,6 +80,7 @@ export default function EmployeeRequest() {
                 setnewtitle('');
                 setNewReceiver('');
                 setnewContent('');
+                loadMyRequest();
             } else {
                 throw new Error('Lỗi khi gửi yêu cầu');
             }

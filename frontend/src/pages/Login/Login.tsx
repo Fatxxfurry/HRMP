@@ -83,8 +83,8 @@ export default function Login() {
             <Button type="submit" className="w-full" disabled={isLoading}>
               {isLoading ? "Đang đăng nhập..." : "Đăng nhập"}
             </Button>
-            <Button type="submit" className="w-full" onClick={handleFaceRecognitionLogin}>
-              Đăng nhập bằng nhận diện khuôn mặt
+            <Button className="w-full" onClick={handleFaceRecognitionLogin} >
+              Chấm công nhanh bằng nhận diện khuôn mặt
             </Button>
           </form>
         </CardContent>
