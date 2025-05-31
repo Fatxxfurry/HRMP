@@ -11,7 +11,7 @@ import { BrowserRouter as Router, Routes, Route } from "react-router"
 
 import { useAuth } from "../context/AuthContext" 
 import { Outlet } from "react-router";
-
+import FaceRegButton from "@/components/defined/FaceRegButton"
 export default function Dashboard() {
   const { user } = useAuth()
 
@@ -27,6 +27,7 @@ export default function Dashboard() {
             <AttendanceButton/>
             <span className="ml-4 font-medium">{user?.role === "admin" ? "Admin Dashboard" : "User Dashboard"}</span>
           </div>
+
         </header>
        <Outlet/>
       </SidebarInset>

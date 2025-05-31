@@ -16,7 +16,7 @@ export default function EmployeeCalendar() {
             <iframe
                         title="Google Calendar View"
                         src={getFixedEmbedUrl()}
-                        width="1200"
+                        width="1600"
                         height="600"
                     />
         </div>
