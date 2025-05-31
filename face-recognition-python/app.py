@@ -48,14 +48,15 @@ def get_encodings():
 @app.route('/recognize', methods=['POST'])
 def recognize():
     file = request.files['image']
-    img = face_recognition.load_image_file( file)
+    img = face_recognition.load_image_file(file)
     faces = face_recognition.face_encodings(img)
-
+    tolerance = 0.4  
     for face in faces:
-        matches = face_recognition.compare_faces(known_face_encodings, face)
-        if True in matches:
-            matched_idx = matches.index(True)
-            return jsonify({"employeeId": known_face_ids[matched_idx]})
+        face_distances = face_recognition.face_distance(known_face_encodings, face)
+        best_match_idx = np.argmin(face_distances)     
+        if face_distances[best_match_idx] < tolerance:
+            return jsonify({"employeeId": known_face_ids[best_match_idx]})
     return jsonify({"employeeId": None}), 200
+
 
 app.run(debug=True)
