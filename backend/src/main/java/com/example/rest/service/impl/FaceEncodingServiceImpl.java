@@ -30,27 +30,40 @@ public class FaceEncodingServiceImpl implements FaceEncodingService {
 
 
         @Override
-        public FaceEncoding createFaceEncoding(Employee employee, String encodingJson) {
-            FaceEncoding existingFaceEncoding = faceEncodingRepository.findFirstByEmployee(employee);
-            if (existingFaceEncoding != null) {
-                existingFaceEncoding.setEncodingJson(encodingJson);
-                    ResponseEntity<String> response = restTemplate.getForEntity(
-                    "http://127.0.0.1:5000/get-encodings",
-                    String.class
-            );
-                return faceEncodingRepository.save(existingFaceEncoding);
-            }
-            FaceEncoding faceEncoding = new FaceEncoding();
-            faceEncoding.setEmployee(employee);
-            faceEncoding.setEncodingJson(encodingJson);
+    public FaceEncoding createFaceEncoding(Employee employee, String encodingJson) {
+        FaceEncoding existingFaceEncoding = faceEncodingRepository.findFirstByEmployee(employee);
 
+        if (existingFaceEncoding != null) {
+            existingFaceEncoding.setEncodingJson(encodingJson);
+            FaceEncoding savedEncoding = faceEncodingRepository.save(existingFaceEncoding);
+
+            // Đảm bảo flush để DB thực sự có dữ liệu
+            faceEncodingRepository.flush();
+
+            // Gọi API Flask
             ResponseEntity<String> response = restTemplate.getForEntity(
                     "http://127.0.0.1:5000/get-encodings",
                     String.class
             );
 
-            return faceEncodingRepository.save(faceEncoding);
+            return savedEncoding;
         }
+
+        FaceEncoding faceEncoding = new FaceEncoding();
+        faceEncoding.setEmployee(employee);
+        faceEncoding.setEncodingJson(encodingJson);
+
+        FaceEncoding savedEncoding = faceEncodingRepository.save(faceEncoding);
+        faceEncodingRepository.flush();
+
+        ResponseEntity<String> response = restTemplate.getForEntity(
+                "http://127.0.0.1:5000/get-encodings",
+                String.class
+        );
+
+        return savedEncoding;
+    }
+
     @Override
     public String getEncodingCodeFromPython(byte[] image) {
         HttpHeaders headers = new HttpHeaders();

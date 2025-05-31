@@ -98,8 +98,8 @@ public class EmployeeController {
  	public ResponseEntity<String> uploadImage(@PathVariable("id") long id, @RequestParam("image") MultipartFile file) throws Exception {
 		Employee employee = employeeService.getEmployeeById(id);
 		if(employee != null && !file.isEmpty()) {
-			 String encodedImage = faceEncodingService.getEncodingCodeFromPython(file.getBytes());
-			 faceEncodingService.createFaceEncoding(employee, encodedImage);
+			String encodedImage = faceEncodingService.getEncodingCodeFromPython(file.getBytes());
+			faceEncodingService.createFaceEncoding(employee, encodedImage);
  			employee = employeeService.updateImage(employee, file);
  			return new ResponseEntity<String>("Image uploaded successfully!.", HttpStatus.OK);
  		} else {
