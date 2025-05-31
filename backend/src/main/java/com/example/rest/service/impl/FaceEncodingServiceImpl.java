@@ -34,6 +34,10 @@ public class FaceEncodingServiceImpl implements FaceEncodingService {
             FaceEncoding existingFaceEncoding = faceEncodingRepository.findFirstByEmployee(employee);
             if (existingFaceEncoding != null) {
                 existingFaceEncoding.setEncodingJson(encodingJson);
+                    ResponseEntity<String> response = restTemplate.getForEntity(
+                    "http://127.0.0.1:5000/get-encodings",
+                    String.class
+            );
                 return faceEncodingRepository.save(existingFaceEncoding);
             }
             FaceEncoding faceEncoding = new FaceEncoding();

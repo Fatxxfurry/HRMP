@@ -78,6 +78,9 @@ public class AttendenceController {
         ObjectMapper mapper = new ObjectMapper();
         try {
             JsonNode root = mapper.readTree(faceRecognitionService.recognize(file));
+            if (root.get("employeeId") == null) {
+                return null;
+            }
             Long employee_id = root.get("employeeId").asLong();
 
             if (employee_id == null) {
