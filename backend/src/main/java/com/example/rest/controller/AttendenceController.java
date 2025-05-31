@@ -92,4 +92,24 @@ public class AttendenceController {
             return null;
         }
     }
+    @PostMapping("/face/checkout")
+    public Attendence recognizeFaceCheckOut(@RequestParam("image") MultipartFile file) {
+        ObjectMapper mapper = new ObjectMapper();
+        try {
+            JsonNode root = mapper.readTree(faceRecognitionService.recognize(file));
+            if (root.get("employeeId") == null) {
+                return null;
+            }
+            Long employee_id = root.get("employeeId").asLong();
+
+            if (employee_id == null) {
+                return null;
+            }
+            var employee = employeeService.getEmployeeById(employee_id);
+            return attendenceService.markCheckoutAttendence(employee);
+        } catch (JsonProcessingException e) {
+            return null;
+        }
+    }
+
 }

@@ -103,5 +103,15 @@ public class AttendencServiceImpl implements AttendenceService {
         }
         return attendenceRepository.findByEmployeeAndDate(employee, LocalDate.now()).get(0);
     }
+
+    @Override
+    public Attendence markCheckoutAttendence(Employee employee) {
+        Attendence attendence = attendenceRepository.findByEmployeeAndDate(employee, LocalDate.now()).get(0);
+        if (attendence.getCheckOutTime() != null) {
+            return attendence;
+        }
+        attendence.setCheckOutTime(LocalTime.now());
+        return attendenceRepository.save(attendence);
+    }
 }
 

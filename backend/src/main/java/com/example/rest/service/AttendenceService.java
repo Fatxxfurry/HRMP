@@ -19,6 +19,8 @@ public interface AttendenceService {
 
     Attendence markAttendence(Employee employee);
 
+    Attendence markCheckoutAttendence(Employee employee);
+
     AttendenceStatus calculateStatus(Employee employee, LocalDate date, LocalTime localTime);
     
     void deleteAttendence(Long id);
