@@ -1,7 +1,13 @@
 package com.example.rest.service.impl;
+
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.List;
 
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.example.rest.model.Employee;
 import com.example.rest.repository.EmployeeRepository;
@@ -45,5 +51,22 @@ public class EmployeeServiceImpl implements EmployeeService {
     @Override
     public void deleteEmployee(Long id) {
         employeeRepository.deleteById(id);
+    }
+    @Override
+    public Employee updateImage(Employee employee, MultipartFile file) {
+        try {
+            String employeeId = employee.getId().toString();
+            String fileName = file.getOriginalFilename();
+            String fileExtension = fileName.substring(fileName.lastIndexOf("."));
+            fileName = employeeId + fileExtension;
+            Path path = Paths.get("uploads/" + fileName);
+            Files.createDirectories(path.getParent());
+            Files.write(path, file.getBytes());
+
+            employee.setImage(fileName);
+            return employeeRepository.save(employee);
+        } catch (IOException e) {
+            return null;
+        }
     }
 }

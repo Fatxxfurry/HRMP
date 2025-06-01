@@ -22,6 +22,7 @@ import { useEffect } from 'react'
 import { useAuth } from '@/context/AuthContext'
 import { useParams } from 'react-router'
 import axios from 'axios'
+import { toast } from "sonner"
 interface Salary {
     basic_salary: string,
     bonus: string,
@@ -54,10 +55,10 @@ export default function AddSalary() {
     const handleSubmit = async () => {
         try {
             await axios.post("http://localhost:8080/api/salaries", EmployeeSalary);
-            alert("Kế hoạch nhận lương đã được tạo.");
+            toast("Kế hoạch nhận lương đã được tạo.");
         } catch (error) {
             console.error(error);
-            alert("Lỗi khi tạo lịch nhận lương.");
+            toast("Lỗi khi tạo lịch nhận lương.");
         }
     };
 

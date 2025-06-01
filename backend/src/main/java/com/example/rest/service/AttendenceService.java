@@ -10,10 +10,16 @@ import com.example.rest.model.enums.AttendenceStatus;
 
 public interface AttendenceService {
     List<Attendence> getAllAttendences();
+
     Attendence getAttendenceById(Long id);
+    
     Attendence createAttendence(Attendence attendence);
 
     Attendence updateAttendence(Long id, Attendence attendence);
+
+    Attendence markAttendence(Employee employee);
+
+    Attendence markCheckoutAttendence(Employee employee);
 
     AttendenceStatus calculateStatus(Employee employee, LocalDate date, LocalTime localTime);
     

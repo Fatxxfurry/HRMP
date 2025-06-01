@@ -154,6 +154,16 @@ export default function AdminTimekeeping() {
             .includes(searchTerm.toLowerCase())
     );
     const loadAttendanceHourData = async () => {
+        const today = new Date();
+        const startOfWeek = new Date(today);
+        startOfWeek.setDate(today.getDate() - today.getDay()); // Chủ nhật tuần này
+        startOfWeek.setHours(0, 0, 0, 0);
+
+        const endOfWeek = new Date(startOfWeek);
+        endOfWeek.setDate(startOfWeek.getDate() + 6); // Thứ Bảy
+        endOfWeek.setHours(23, 59, 59, 999);
+        console.log("startOfWeek:", startOfWeek);
+        console.log("endOfWeek:", endOfWeek);
         try {
             const response = await axios.get<AttendanceData[]>("http://localhost:8080/api/attendence");
             const data = response.data;
@@ -170,20 +180,20 @@ export default function AdminTimekeeping() {
             };
 
             data.forEach((entry) => {
+                const entryDate = new Date(entry.date);
                 if (entry.status !== "PRESENT") return;
+                if (entryDate < startOfWeek || entryDate > endOfWeek) return; // Bỏ nếu không trong tuần này
 
-                const dateObj = new Date(entry.date);
-                const dayName = daysOfWeek[dateObj.getDay()];
-
+                const dayName = daysOfWeek[entryDate.getDay()];
                 const checkIn = new Date(`${entry.date}T${entry.checkInTime}`);
                 const checkOut = new Date(`${entry.date}T${entry.checkOutTime}`);
                 const diffHours = (checkOut.getTime() - checkIn.getTime()) / (1000 * 60 * 60);
 
-                // Chỉ cộng nếu hợp lệ
                 if (!isNaN(diffHours) && diffHours > 0) {
                     hourMap[dayName] += diffHours;
                 }
             });
+
 
             const finalData: WorkHourItem[] = daysOfWeek.map((day) => ({
                 Day: day,
@@ -220,10 +230,9 @@ export default function AdminTimekeeping() {
                 <div className="aspect-video rounded-xl bg-muted/50 p-4">
                     <CardHeader>
                         <CardTitle>Số giờ làm việc trong tuần</CardTitle>
-                        <CardDescription>07 - 12/04/2025</CardDescription>
                     </CardHeader>
                     <CardContent>
-                        <ChartContainer config={WorkhourchartConfig}> 
+                        <ChartContainer config={WorkhourchartConfig}>
                             <BarChart
                                 accessibilityLayer
                                 data={workHourData}

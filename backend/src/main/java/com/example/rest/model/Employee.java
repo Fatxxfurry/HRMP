@@ -3,8 +3,8 @@ package com.example.rest.model;
 import java.time.LocalDate;
 import java.util.List;
 
-import com.example.rest.model.enums.Gender;
 import com.example.rest.model.enums.EmployeeRole;
+import com.example.rest.model.enums.Gender;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import jakarta.persistence.Entity;
@@ -58,6 +58,9 @@ public class Employee {
 
     private String identification;
 
+    
+    private String image;
+ 
     private String username;
     
     private LocalDate birth_date;
@@ -65,6 +68,7 @@ public class Employee {
     
     private LocalDate hire_date;
     private Boolean status;
+    private String avatar;
     @ManyToOne
     @JoinColumn(name = "department_id",referencedColumnName="id")
     private Department department;

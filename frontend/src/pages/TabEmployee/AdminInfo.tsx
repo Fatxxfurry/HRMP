@@ -301,7 +301,7 @@ export default function AdminInfo() {
 
                 </ScrollArea>
                 <Link to='/admin/add-employee'>
-                    <Button variant="outline" size="sm" >
+                    <Button variant="outline" size="sm" className="mt-4">
                         Thêm nhân viên
                     </Button>
                 </Link>

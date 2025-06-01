@@ -1,7 +1,5 @@
 package com.example.rest.controller;
 
-import java.time.LocalDate;
-import java.time.LocalTime;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,13 +11,19 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.example.rest.dto.AttendanceStatusCalculate;
 import com.example.rest.model.Attendence;
-import com.example.rest.model.Employee;
 import com.example.rest.model.enums.AttendenceStatus;
 import com.example.rest.service.AttendenceService;
+import com.example.rest.service.EmployeeService;
+import com.example.rest.service.FaceRecognitionService;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 @RestController
 @CrossOrigin
@@ -27,9 +31,13 @@ import com.example.rest.service.AttendenceService;
 public class AttendenceController {
 
     private final AttendenceService attendenceService;
+    private final FaceRecognitionService faceRecognitionService;
+    private final EmployeeService employeeService;
 
     @Autowired
-    public AttendenceController(AttendenceService attendenceService) {
+    public AttendenceController(AttendenceService attendenceService, FaceRecognitionService faceRecognitionService,EmployeeService employeeService) {
+        this.employeeService = employeeService;
+        this.faceRecognitionService = faceRecognitionService;
         this.attendenceService = attendenceService;
     }
 
@@ -64,6 +72,44 @@ public class AttendenceController {
     @DeleteMapping("/{id}")
     public void deleteAttendence(@PathVariable Long id) {
         attendenceService.deleteAttendence(id);
+    }
+    @PostMapping("/face")
+    public Attendence recognizeFace(@RequestParam("image") MultipartFile file) {
+        ObjectMapper mapper = new ObjectMapper();
+        try {
+            JsonNode root = mapper.readTree(faceRecognitionService.recognize(file));
+            if (root.get("employeeId") == null) {
+                return null;
+            }
+            Long employee_id = root.get("employeeId").asLong();
+
+            if (employee_id == null) {
+                return null;
+            }
+            var employee = employeeService.getEmployeeById(employee_id);
+            return attendenceService.markAttendence(employee);
+        } catch (JsonProcessingException e) {
+            return null;
+        }
+    }
+    @PostMapping("/face/checkout")
+    public Attendence recognizeFaceCheckOut(@RequestParam("image") MultipartFile file) {
+        ObjectMapper mapper = new ObjectMapper();
+        try {
+            JsonNode root = mapper.readTree(faceRecognitionService.recognize(file));
+            if (root.get("employeeId") == null) {
+                return null;
+            }
+            Long employee_id = root.get("employeeId").asLong();
+
+            if (employee_id == null) {
+                return null;
+            }
+            var employee = employeeService.getEmployeeById(employee_id);
+            return attendenceService.markCheckoutAttendence(employee);
+        } catch (JsonProcessingException e) {
+            return null;
+        }
     }
 
 }
