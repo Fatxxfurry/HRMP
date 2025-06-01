@@ -110,17 +110,34 @@ interface Project {
     end_date: Date,
 }
 export default function EmployeeManagement() {
-    const [selectedProject, setSelectedProject] = useState(projects[0]);
     const [showEditDialog, setShowEditDialog] = useState(false)
     const [employeeTaskInfo, setEmployeeTaskInfo] = useState<Task[]>([])
     const [status, setStatus] = useState('')
     const [selectedTask, setSelectedTask] = useState<Task | null>(null)
+    const [projectData, setProjectData] = useState<Project[]>([])
+    const [selectedProject, setSelectedProject] = useState<Project | null>(null)
 
 
     const { user } = useAuth()
     useEffect(() => {
         loadEmployeeTaskInfo()
+        loadProjectsInfo()
     }, [user])
+    const loadProjectsInfo = async () => {
+        try {
+            const response = await axios.get(`http://localhost:8080/api/projects`)
+            if (!response) {
+                throw new Error('Failed to fetch employee task info')
+            }
+            const data: Project[] = response.data
+            setProjectData(data)
+            setSelectedProject(data[0])
+        } catch (error) {
+            console.error('Error fetching employee task info:', error)
+        }
+
+    }
+
     const loadEmployeeTaskInfo = async () => {
         try {
             const response = await axios.get(`http://localhost:8080/api/tasks`)
@@ -136,16 +153,16 @@ export default function EmployeeManagement() {
         }
 
     }
-        const handleUpdateStatus = (value: string) => {
-            const finishedValue = value === 'finished';
+    const handleUpdateStatus = (value: string) => {
+        const finishedValue = value === 'finished';
 
-            if (!selectedTask) return;
+        if (!selectedTask) return;
 
-            axios.put(`http://localhost:8080/api/tasks/${selectedTask?.id}`, {
-                finished: finishedValue,
-            })
-                .then(response => {
-                    console.log('Task updated successfully:', response.data);
+        axios.put(`http://localhost:8080/api/tasks/${selectedTask?.id}`, {
+            finished: finishedValue,
+        })
+            .then(response => {
+                console.log('Task updated successfully:', response.data);
                 setShowEditDialog(false);
                 loadEmployeeTaskInfo();
 
@@ -155,11 +172,12 @@ export default function EmployeeManagement() {
             });
     };
 
-    
+
     const handleSelectChange = (value: string) => {
-        const project = projects.find(p => p.name === value);
+        const project = projectData.find(p => p.name === value);
         if (project) setSelectedProject(project);
     };
+
     const getTaskCompletionData = (tasks: Task[]) => {
         const finished = tasks.filter(task => task.finished).length
         const unfinished = tasks.length - finished
@@ -174,7 +192,7 @@ export default function EmployeeManagement() {
             { status: "finished", number: 0, fill: "hsl(var(--chart-2))" },
             { status: "unfinished", number: 0, fill: "hsl(var(--chart-3))" },
         ]
-
+ 
 
     return (
         <div className="flex flex-1 flex-col gap-4 p-4 pt-0">
@@ -184,34 +202,30 @@ export default function EmployeeManagement() {
                         <CardTitle>Tiến độ dự án</CardTitle>
                         <CardDescription></CardDescription>
                         <div className="w-full mt-4">
-                            <Select onValueChange={handleSelectChange} defaultValue={selectedProject.name}>
+                            <Select onValueChange={handleSelectChange} defaultValue={selectedProject?.name}>
                                 <SelectTrigger>
                                     <SelectValue placeholder="Chọn dự án" />
                                 </SelectTrigger>
                                 <SelectContent>
-                                    {projects.map((project) => (
+                                    {projectData.map((project) => (
                                         <SelectItem key={project.name} value={project.name}>
                                             {project.name}
                                         </SelectItem>
                                     ))}
                                 </SelectContent>
                             </Select>
+
                         </div>
                     </CardHeader>
-                    <CardContent className="flex-1 pb-0">
-                        <ChartContainer
-                            config={chartConfig}
-                            className="mx-auto aspect-square max-h-[250px]"
-                        >
-                            <PieChart>
-                                <ChartTooltip cursor={false} content={<ChartTooltipContent hideLabel />} />
-                                <Pie
-                                    data={selectedProject.data}
-                                    dataKey="number"
-                                    nameKey="status"
-                                />
-                            </PieChart>
-                        </ChartContainer>
+                    <CardContent className="flex justify-center items-center h-40">
+                        {selectedProject ? (
+                            <span className={`text-xl font-semibold ${selectedProject.finished ? 'text-green-600' : 'text-red-600'}`}>
+                                {selectedProject.finished ? 'Hoàn thành' : 'Chưa hoàn thành'}
+                            </span>
+                        ) : (
+                            <span className="text-gray-500">Không có dự án</span>
+                        )}
+
                     </CardContent>
                 </div>
                 <div className="aspect-video rounded-xl bg-muted/50" >
