@@ -116,7 +116,7 @@ export default function AdminTimekeeping() {
             setPresentDay(count);
             setlateDay(latecount);
             setAbsentDay(absentcount);
-            setAttendanceRate((count / totalentry) * 100);
+            setAttendanceRate(Math.round((count / totalentry) * 100));
             console.log("Số ngày có mặt hôm nay:", count);
             const attendanceMap: { [day: string]: number } = {
                 Sunday: 0,

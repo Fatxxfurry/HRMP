@@ -66,7 +66,7 @@ export default function EmployeePayment() {
                             <TableRow>
                                 <TableHead >STT</TableHead>
                                 <TableHead>Tháng thứ</TableHead>
-                                <TableHead>Ngày nhận</TableHead>
+                                <TableHead>Ngày dự kiến nhận</TableHead>
                                 <TableHead >Lương cứng</TableHead>
                                 <TableHead >Thưởng</TableHead>
                                 <TableHead >Phạt</TableHead>
