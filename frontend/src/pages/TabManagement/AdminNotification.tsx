@@ -62,7 +62,7 @@ export default function AdminNotification() {
             loadmynotification()
             loadmyinformation()
         }
-    }, [user])
+    }, [])
     const loadmynotification = async () => {
         try {
             const response = await axios.get(`http://localhost:8080/api/notifications/employee/${user?.id}`)
@@ -126,7 +126,7 @@ export default function AdminNotification() {
     return (
 
         <div className="flex flex-1 flex-col gap-4 p-4 pt-0">
-            <div className="min-h-[100vh] flex-1 rounded-xl bg-muted/50 md:min-h-min p-4 " >
+            <div className="min-h-[100vh] flex-1 rounded-xl bg-[#F0F0EF] md:min-h-min p-4 " >
                 <div className='text-center font-bold text-lg mb-4'>
                     <Label >Tiêu đề</Label>
                     <Input
@@ -171,7 +171,7 @@ export default function AdminNotification() {
                     <Button type="submit" onClick={handleAdd} >Gửi thông báo</Button>
                 </div>
             </div>
-            <div className="min-h-[100vh] flex-1 rounded-xl bg-muted/50 md:min-h-min" >
+            <div className="min-h-[100vh] flex-1 rounded-xl bg-[#F0F0EF] md:min-h-min" >
                 {mynotification.length > 0 ? (
                     mynotification.map((notification) => (
                         <NotificationHistory

@@ -81,7 +81,7 @@ const Admindata = {
           url: "/admin/project-management",
         },
         {
-          title: "Assign tasks",
+          title: "Phân công công việc",
           url: "/admin/tasks-management",
         },
         {
@@ -92,16 +92,19 @@ const Admindata = {
           title: "Lịch",
           url: "/admin/calendar",
         },
-        {
-          title: "Thông tin",
-          url: "/admin/information",
-        },
+
       ],
     },
     {
-      title: "Cài đặt",
+     title: "Cài đặt",
       url: "#",
-      icon: Settings2
+      icon: Settings2,
+      items: [
+        {
+          title: "Cài đặt chung",
+          url: "setting",
+        }
+      ]
     },
   ],
 }
@@ -112,7 +115,7 @@ const Userdata = {
   },
   teams: [
     {
-      name: "Acme Inc",
+      name: "Công Ty TNHH MotMinhToi",
       logo: GalleryVerticalEnd,
       plan: "Enterprise",
     },
@@ -163,7 +166,7 @@ const Userdata = {
           url: "/user/project-management",
         },
         {
-          title: "Assign tasks",
+          title: "Phân công công việc",
           url: "/user/tasks-management",
         },
         {
@@ -174,16 +177,19 @@ const Userdata = {
           title: "Lịch",
           url: "/user/calendar",
         },
-        {
-          title: "Thông tin",
-          url: "/user/information",
-        },
+
       ],
     },
     {
       title: "Cài đặt",
       url: "#",
-      icon: Settings2
+      icon: Settings2,
+      items: [
+        {
+          title: "Cài đặt chung",
+          url: "setting",
+        }
+      ]
     },
   ],
 }

@@ -1,6 +1,7 @@
 //Trang quản lí tổng quan dự án, task cho admin
 
 "use client"
+
 import * as React from "react"
 import { useState } from "react";
 import { Bar, BarChart, CartesianGrid, LabelList, XAxis, Line, LineChart, Pie, PieChart } from "recharts"
@@ -112,7 +113,7 @@ export default function AdminManagement() {
 
     const { user } = useAuth()
     // Lọc dữ liệu theo từ khóa
-    
+
     useEffect(() => {
         loadProjectsInfo()
         loadEmployeeTaskInfo()
@@ -131,7 +132,7 @@ export default function AdminManagement() {
         }
 
     }
-    const handleUpdateStatus =  (value: string) => {
+    const handleUpdateStatus = (value: string) => {
         const finishedValue = value === 'finished';
 
         if (!selectedProject) return;
@@ -234,7 +235,7 @@ export default function AdminManagement() {
             { status: "active", number: 0, fill: "hsl(var(--chart-1))" },
             { status: "unactive", number: 0, fill: "hsl(var(--chart-2))" },
         ]
-     const filteredData = projectData.filter((item) =>
+    const filteredData = projectData.filter((item) =>
         `${item.id} ${item?.name} ${item.status}`
             .toLowerCase()
             .includes(searchProject.toLowerCase())
@@ -247,7 +248,7 @@ export default function AdminManagement() {
     return (
         <div className="flex flex-1 flex-col gap-4 p-4 pt-0">
             <div className="grid auto-rows-min gap-4 md:grid-cols-3">
-                <div className="aspect-video rounded-xl bg-muted/50 p-4" >
+                <div className="aspect-video rounded-xl bg-[#F0F0EF] p-4" >
                     <CardHeader className="items-center pb-0">
                         <CardTitle>Tình trạng active - unactive của nhân viên</CardTitle>
                         <CardDescription>January - June 2024</CardDescription>
@@ -267,7 +268,7 @@ export default function AdminManagement() {
                         </ChartContainer>
                     </CardContent>
                 </div>
-                <div className="aspect-video rounded-xl bg-muted/50 p-4" >
+                <div className="aspect-video rounded-xl bg-[#F0F0EF] p-4" >
                     <CardHeader className="items-center pb-0">
                         <CardTitle>Tiến độ dự án</CardTitle>
                         <CardDescription>January - June 2024</CardDescription>
@@ -287,7 +288,7 @@ export default function AdminManagement() {
                         </ChartContainer>
                     </CardContent>
                 </div>
-                <div className="aspect-video rounded-xl bg-muted/50 p-4 " >
+                <div className="aspect-video rounded-xl bg-[#F0F0EF] p-4 " >
                     <CardHeader className="items-center pb-0">
                         <CardTitle>Tiến độ task</CardTitle>
                         <CardDescription>January - June 2024</CardDescription>
@@ -311,7 +312,7 @@ export default function AdminManagement() {
 
             </div>
             <div className="grid auto-rows-min gap-4 md:grid-cols-1">
-                <div className=" rounded-xl bg-muted/50 p-4" >
+                <div className=" rounded-xl bg-[#F0F0EF] p-4" >
                     <Input
                         placeholder="Tìm kiếm dự án..."
                         value={searchProject}
@@ -322,14 +323,14 @@ export default function AdminManagement() {
 
                         <Table className="min-w-[500px]" >
                             <TableCaption>Danh sách dự án.</TableCaption>
-                            <TableHeader>
-                                <TableRow>
-                                    <TableHead >Mã dự án</TableHead>
-                                    <TableHead>Tên dự án</TableHead>
-                                    <TableHead>Ngày bắt đầu</TableHead>
-                                    <TableHead >Deadline</TableHead>
-                                    <TableHead >Trạng thái</TableHead>
-                                    <TableHead>Thao tác</TableHead>
+                            <TableHeader className="bg-[#2D2D38] border-b-2 text-white">
+                                <TableRow className="divide-x divide-slate-200">
+                                    <TableHead className="font-semibold text-white px-4 py-3" >Mã dự án</TableHead>
+                                    <TableHead className="font-semibold text-white px-4 py-3">Tên dự án</TableHead>
+                                    <TableHead className="font-semibold text-white px-4 py-3">Ngày bắt đầu</TableHead>
+                                    <TableHead className="font-semibold text-white px-4 py-3">Deadline</TableHead>
+                                    <TableHead className="font-semibold text-white px-4 py-3">Trạng thái</TableHead>
+                                    <TableHead className="font-semibold text-white px-4 py-3">Thao tác</TableHead>
                                 </TableRow>
                             </TableHeader>
                             <TableBody>
@@ -404,7 +405,7 @@ export default function AdminManagement() {
                         </Table>
                     </ScrollArea>
                 </div>
-                <div className="aspect-video rounded-xl bg-muted/50 p-4" >
+                <div className="aspect-video rounded-xl bg-[#F0F0EF] p-4" >
                     <Input
                         placeholder="Tìm kiếm task..."
                         value={searchTask}
@@ -414,15 +415,15 @@ export default function AdminManagement() {
                     <ScrollArea className="overflow-auto h-[250px] rounded-md border p-4">
                         <Table >
                             <TableCaption>Danh sách task và dự án tương ứng.</TableCaption>
-                            <TableHeader>
-                                <TableRow>
-                                    <TableHead >Mã Task</TableHead>
-                                    <TableHead>Mô tả Task</TableHead>
-                                    <TableHead>Tên dự án</TableHead>
-                                    <TableHead>Ngày bắt đầu</TableHead>
-                                    <TableHead >Deadline</TableHead>
-                                    <TableHead >Trạng thái</TableHead>
-                                    <TableHead>Thao tác</TableHead>
+                            <TableHeader className="bg-[#2D2D38] border-b-2 text-white">
+                                <TableRow className="divide-x divide-slate-200">
+                                    <TableHead className="font-semibold text-white px-4 py-3">Mã Task</TableHead>
+                                    <TableHead className="font-semibold text-white px-4 py-3">Mô tả Task</TableHead>
+                                    <TableHead className="font-semibold text-white px-4 py-3">Tên dự án</TableHead>
+                                    <TableHead className="font-semibold text-white px-4 py-3">Ngày bắt đầu</TableHead>
+                                    <TableHead className="font-semibold text-white px-4 py-3">Deadline</TableHead>
+                                    <TableHead className="font-semibold text-white px-4 py-3">Trạng thái</TableHead>
+                                    <TableHead className="font-semibold text-white px-4 py-3">Thao tác</TableHead>
 
                                 </TableRow>
                             </TableHeader>
@@ -499,10 +500,7 @@ export default function AdminManagement() {
                 </div>
             </div>
 
-            <div className="min-h-[100vh] flex-1 rounded-xl bg-muted/50 md:min-h-min overflow-auto max-h-screen" >
 
-
-            </div>
 
         </div>
     )

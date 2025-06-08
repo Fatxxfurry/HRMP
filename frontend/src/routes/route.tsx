@@ -14,7 +14,7 @@ import EmployeeInfo from "@/pages/TabEmployee/EmployeeInfo"
 import EmployeeRequest from "@/pages/TabEmployee/EmployeeRequest"
 import RequestHistory from "@/components/defined/RequestHistory"
 import RequestDetail from "@/components/defined/RequestDetail"
-import  RoleProtectedRoute  from "./ProtectedRoute";
+import RoleProtectedRoute from "./ProtectedRoute";
 import EmployeeTimekeeping from "@/pages/TabTimeKeeping/EmployeeTimekeeping";
 import Login from "@/pages/Login/Login";
 import Dashboard from "@/layout/dashboard";
@@ -29,6 +29,7 @@ import UpdateEmployeeSalary from "@/components/defined/UpdateEmployeeSalary";
 import AddSalary from "@/components/defined/AddSalary";
 import FaceRecognition from "@/components/defined/FaceRecognition";
 import EmployeeCalendar from "@/pages/TabManagement/EmployeeCalendar";
+import OverallSetting from "@/pages/TabSetting/OverallSetting";
 const router = createBrowserRouter([
   {
     path: "/",
@@ -38,10 +39,11 @@ const router = createBrowserRouter([
     path: "/login",
     element: <Login />,
   },
-   {
+  {
     path: "/face-recognition",
     element: <FaceRecognition />,
   },
+
   {
     path: "/admin",
     element: <RoleProtectedRoute allowedRoles={["admin"]} />,
@@ -102,20 +104,24 @@ const router = createBrowserRouter([
             element: <AddEmployee />,
           },
           {
-            path:"edit-employee/:id",
+            path: "edit-employee/:id",
             element: <UpdateEmployee />,
           },
           {
             path: "edit-salary/:id",
-            element: <UpdateEmployeeSalary/>
+            element: <UpdateEmployeeSalary />
           },
           {
             path: "add-salary/",
-            element: <AddSalary/>
+            element: <AddSalary />
           },
           {
             path: "calendar",
             element: <CalendarManagement />,
+          },
+          {
+            path: "setting",
+            element: <OverallSetting />,
           }
         ],
       },
@@ -176,6 +182,10 @@ const router = createBrowserRouter([
             path: "calendar",
             element: <EmployeeCalendar />,
           },
+          {
+            path: "setting",
+            element: <OverallSetting />,
+          }
         ],
       },
     ],

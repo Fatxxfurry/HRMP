@@ -69,6 +69,9 @@ public class Employee {
     private LocalDate hire_date;
     private Boolean status;
     private String avatar;
+    private String bank;
+    private String bank_number;
+    private String insurance;
     @ManyToOne
     @JoinColumn(name = "department_id",referencedColumnName="id")
     private Department department;

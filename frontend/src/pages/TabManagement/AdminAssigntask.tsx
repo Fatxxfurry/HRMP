@@ -1,6 +1,7 @@
 // Quán lí task và giao task của admin
 
 "use client"
+import { Eye, Edit, Trash2, Trash } from "lucide-react"
 import * as React from 'react'
 import { useState } from 'react'
 import { Button } from "@/components/ui/button"
@@ -231,7 +232,7 @@ export default function AdminAssigntask() {
     return (
         <div className="flex flex-1 flex-col gap-4 p-4 pt-0">
             <div className="grid auto-rows-min gap-4 md:grid-cols-1">
-                <div className="aspect-auto rounded-xl bg-muted/50 p-4" >
+                <div className="aspect-auto rounded-xl bg-[#F0F0EF] p-4" >
                     <div className="flex flex-row gap-4  mb-2">
                         <Select value={projectfilter} onValueChange={setprojectfilter}>
                             <SelectTrigger className="w-[180px]">
@@ -259,18 +260,17 @@ export default function AdminAssigntask() {
                     <ScrollArea className="h-[250px] rounded-md border p-4">
                         <Table >
                             <TableCaption>Danh sách task và dự án tương ứng.</TableCaption>
-                            <TableHeader>
-                                <TableRow>
-                                    <TableHead >Mã Task</TableHead>
-                                    <TableHead>Tên Task</TableHead>
-                                    <TableHead>Tên dự án</TableHead>
-                                    <TableHead>Ngày bắt đầu</TableHead>
-                                    <TableHead >Deadline</TableHead>
-                                    <TableHead >Trạng thái</TableHead>
-                                    <TableHead >Nhân viên thực hiện</TableHead>
-                                    <TableHead >Phòng ban quản lí</TableHead>
-                                    <TableHead >Thao tác</TableHead>
-
+                            <TableHeader className="bg-[#2D2D38] border-b-2 text-white">
+                                <TableRow className="divide-x divide-slate-200">
+                                    <TableHead className="font-semibold text-white px-4 py-3">Mã Task</TableHead>
+                                    <TableHead className="font-semibold text-white px-4 py-3">Tên Task</TableHead>
+                                    <TableHead className="font-semibold text-white px-4 py-3">Tên dự án</TableHead>
+                                    <TableHead className="font-semibold text-white px-4 py-3">Ngày bắt đầu</TableHead>
+                                    <TableHead className="font-semibold text-white px-4 py-3">Deadline</TableHead>
+                                    <TableHead className="font-semibold text-white px-4 py-3">Trạng thái</TableHead>
+                                    <TableHead className="font-semibold text-white px-4 py-3">Nhân viên thực hiện</TableHead>
+                                    <TableHead className="font-semibold text-white px-4 py-3">Phòng ban quản lí</TableHead>
+                                    <TableHead className="font-semibold text-white px-4 py-3">Thao tác</TableHead>
                                 </TableRow>
                             </TableHeader>
                             <TableBody>
@@ -286,8 +286,8 @@ export default function AdminAssigntask() {
                                             <TableCell>{task.employee.name}</TableCell>
                                             <TableCell>{task.project?.involededDepartments?.name}</TableCell>
                                             <TableCell className="space-x-2">
-                                                <Button variant="outline" size="sm" onClick={() => handleEdit(task)}>
-                                                    Sửa
+                                                <Button variant="ghost" className="h-8 w-8 p-0 hover:bg-green-100 hover:text-green-600" size="sm" onClick={() => handleEdit(task)}>
+                                                    <Edit className="h-4 w-4" />
                                                 </Button>
                                                 <Dialog open={showEditDialog} onOpenChange={setShowEditDialog}>
                                                     <DialogContent>
@@ -316,23 +316,28 @@ export default function AdminAssigntask() {
                                                                 placeholder="Mô tả"
                                                             />
                                                             <Input
+                                                                type="date"
                                                                 value={EditTaskStartDate}
                                                                 onChange={(e) => setEditTaskStartDate(e.target.value)}
                                                                 placeholder="Ngày bắt đầu"
                                                             />
                                                             <Input
+                                                                type="date"
                                                                 value={EditTaskEndDate}
                                                                 onChange={(e) => setEditTaskEndDate(e.target.value)}
                                                                 placeholder="Ngày kết thúc"
                                                             />
-                                                            <Button type="submit" onClick={()=>UpdateTask()}>Lưu thay đổi</Button>
+                                                            <div className="flex justify-center mt-4">
+
+                                                                <Button type="submit" onClick={() => UpdateTask()}>Lưu thay đổi</Button>
+                                                            </div>
                                                         </div>
 
                                                     </DialogContent>
                                                 </Dialog>
-                                                <Button variant="destructive" size="sm" onClick={() =>
+                                                <Button variant="ghost" className="h-8 w-8 p-0 hover:bg-red-100 hover:text-red-600" size="sm" onClick={() =>
                                                     handleDelete(task)}>
-                                                    Xóa
+                                                    <Trash2 className="h-4 w-4" />
                                                 </Button>
                                                 <Dialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
                                                     <DialogContent>
@@ -376,7 +381,7 @@ export default function AdminAssigntask() {
 
             </div>
             <div className="grid auto-rows-min gap-4 md:grid-cols-1">
-                <div className="aspect-video rounded-xl bg-muted/50 p-4" >
+                <div className="aspect-video rounded-xl bg-[#F0F0EF] p-4" >
                     {/* Tên project */}
                     <div>
                         <label className="block mb-1">Project ID</label>
@@ -413,6 +418,7 @@ export default function AdminAssigntask() {
                     <div>
                         <label className="block mb-1">Nhập ngày bắt đầu</label>
                         <Input
+                            type="date"
                             placeholder="Nhập ngày bắt đầu"
                             value={newTaskStartDate}
                             onChange={(e) => setNewTaskStartDate(e.target.value)}
@@ -423,6 +429,7 @@ export default function AdminAssigntask() {
                     <div>
                         <label className="block mb-1">Nhập ngày kết thúc</label>
                         <Input
+                            type="date"
                             placeholder="Nhập ngày kết thúc"
                             value={newTaskEndDate}
                             onChange={(e) => setNewTaskEndDate(e.target.value)}

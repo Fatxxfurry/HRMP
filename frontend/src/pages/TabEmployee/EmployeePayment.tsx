@@ -58,19 +58,19 @@ export default function EmployeePayment() {
     return (
         <div className="flex flex-1 flex-col gap-4 p-4 pt-0">
 
-            <div className="min-h-[100vh] flex-1 rounded-xl bg-muted/50 md:min-h-min" >
+            <div className="min-h-[100vh] flex-1 rounded-xl bg-[#F0F0EF] md:min-h-min" >
                 <ScrollArea className="h-[250px] rounded-md border p-4">
                     <Table >
-                        <TableCaption>Danh sách tình trạng chấm công của nhân viên.</TableCaption>
-                        <TableHeader>
-                            <TableRow>
-                                <TableHead >STT</TableHead>
-                                <TableHead>Tháng thứ</TableHead>
-                                <TableHead>Ngày dự kiến nhận</TableHead>
-                                <TableHead >Lương cứng</TableHead>
-                                <TableHead >Thưởng</TableHead>
-                                <TableHead >Phạt</TableHead>
-                                <TableHead >Tổng cộng</TableHead>
+                        <TableCaption>Danh sách kế hoạch nhận lương của nhân viên.</TableCaption>
+                        <TableHeader className="bg-[#2D2D38] border-b-2 text-white">
+                            <TableRow className="divide-x divide-slate-200">
+                                <TableHead className="font-semibold text-white px-4 py-3">STT</TableHead>
+                                <TableHead className="font-semibold text-white px-4 py-3">Tháng thứ</TableHead>
+                                <TableHead className="font-semibold text-white px-4 py-3">Ngày dự kiến nhận</TableHead>
+                                <TableHead className="font-semibold text-white px-4 py-3">Lương cứng</TableHead>
+                                <TableHead className="font-semibold text-white px-4 py-3">Thưởng</TableHead>
+                                <TableHead className="font-semibold text-white px-4 py-3">Phạt</TableHead>
+                                <TableHead className="font-semibold text-white px-4 py-3">Tổng cộng</TableHead>
 
                             </TableRow>
                         </TableHeader>

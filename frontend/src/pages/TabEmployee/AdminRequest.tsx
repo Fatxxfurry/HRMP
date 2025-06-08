@@ -49,8 +49,8 @@ export default function AdminRequest() {
     }
     return (
         <div className="flex flex-1 flex-col gap-4 p-4 pt-0">
-            <div className="min-h-[100vh] flex-1 rounded-xl bg-muted/50 md:min-h-min" >
-                <span className="font-bold block text-center mb-4">Quản lí yêu cầu của nhân viên</span>
+            <div className="min-h-[100vh] flex-1 rounded-xl bg-[#F0F0EF] md:min-h-min" >
+                <span className="font-bold block text-center m-4 text-xl">Quản lí yêu cầu của nhân viên</span>
                 {allRequest.length > 0 ? (
                     allRequest.map((request) => (
                         <RequestHistory

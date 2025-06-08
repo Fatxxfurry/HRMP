@@ -106,8 +106,8 @@ export default function EmployeeRequest() {
     }
     return (
         <div className="flex flex-1 flex-col gap-4 p-4 pt-0">
-            <div className="min-h-[100vh] flex-1 rounded-xl bg-muted/50 md:min-h-min" >
-                <span className="font-bold block text-center mb-4">Tạo yêu cầu, đề xuất mới</span>
+            <div className="min-h-[100vh] flex-1 rounded-xl bg-[#F0F0EF] md:min-h-min" >
+                <span className="font-bold block text-center m-4 text-xl">Tạo yêu cầu, đề xuất mới</span>
                 <div className="space-y-6 p-4" >
                     <div>
                         <Label >Tiêu đề</Label>
@@ -152,7 +152,7 @@ export default function EmployeeRequest() {
                     </div>
                 </div>
             </div>
-            <div className="min-h-[100vh] flex-1 rounded-xl bg-muted/50 md:min-h-min" >
+            <div className="min-h-[100vh] flex-1 rounded-xl bg-[#F0F0EF] md:min-h-min" >
                 {myrequest.length > 0 ? (
                     myrequest.map((request) => (
                         <RequestHistory

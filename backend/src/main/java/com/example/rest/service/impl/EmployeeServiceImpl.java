@@ -44,6 +44,11 @@ public class EmployeeServiceImpl implements EmployeeService {
             if(employee.getAge() != null) existingEmployee.setAge(employee.getAge());
             if (employee.getPosition() != null) existingEmployee.setPosition(employee.getPosition());
             if(employee.getStatus() != null) existingEmployee.setStatus(employee.getStatus());
+            if(employee.getBirth_date() != null) existingEmployee.setBirth_date(employee.getBirth_date());
+            if(employee.getHire_date() != null) existingEmployee.setHire_date(employee.getHire_date());
+            if(employee.getBank() != null) existingEmployee.setBank(employee.getBank());
+            if(employee.getBank_number() != null) existingEmployee.setBank_number(employee.getBank_number());
+            if(employee.getInsurance() != null) existingEmployee.setInsurance(employee.getInsurance());
             return employeeRepository.save(existingEmployee);
         }
         return null;

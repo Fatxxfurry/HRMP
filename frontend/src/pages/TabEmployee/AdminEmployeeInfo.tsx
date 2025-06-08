@@ -37,7 +37,11 @@ interface Employee {
     birth_date: any,
     hire_date: any,
     department: Department
-    avatar: string
+    avatar: string,
+    bank: string,
+    bank_number: string,
+    insurance: string,
+    position: string
 }
 export default function AdminEmployeeInfo() {
     const { id } = useParams<{ id: string }>();
@@ -65,7 +69,7 @@ export default function AdminEmployeeInfo() {
 
     return (
         <div className="flex flex-1 flex-col gap-4 p-4 pt-0">
-            <div className="min-h-[100vh] flex-1 rounded-xl bg-muted/50 md:min-h-min" >
+            <div className="min-h-[100vh] flex-1 rounded-xl bg-[#F0F0EF] md:min-h-min" >
                 {employee && (
                     <Card>
                         <CardHeader>
@@ -130,7 +134,7 @@ export default function AdminEmployeeInfo() {
                                     </div>
                                     <div className="flex items-center gap-2">
                                         <ShieldCheck size={18} />
-                                        <span className="text-xl font-light">Số BHXH: 123456789</span>
+                                        <span className="text-xl font-light">Số BHXH: {employee.insurance}</span>
                                     </div>
                                 </div>
 
@@ -151,11 +155,11 @@ export default function AdminEmployeeInfo() {
                                     </div>
                                     <div className="flex items-center gap-2">
                                         <BriefcaseBusiness size={18} />
-                                        <span className="text-xl font-light">Vị trí: Backend Developer</span>
+                                        <span className="text-xl font-light">Vị trí: {employee.position}</span>
                                     </div>
                                     <div className="flex items-center gap-2">
                                         <Wallet size={18} />
-                                        <span className="text-xl font-light">Lương cơ bản: {employee.salary}</span>
+                                        <span className="text-xl font-light">Lương cơ bản: 15000000</span>
                                     </div>
                                     <div className="flex items-center gap-2">
                                         <CalendarClock size={18} />
@@ -164,11 +168,11 @@ export default function AdminEmployeeInfo() {
                                     </div>
                                     <div className="flex items-center gap-2">
                                         <Landmark size={18} />
-                                        <span className="text-xl font-light">Tên ngân hàng: BIDV</span>
+                                        <span className="text-xl font-light">Tên ngân hàng: {employee.bank}</span>
                                     </div>
                                     <div className="flex items-center gap-2">
                                         <CreditCard size={18} />
-                                        <span className="text-xl font-light">Số tài khoản: 123456789</span>
+                                        <span className="text-xl font-light">Số tài khoản: {employee.bank_number}</span>
                                     </div>
                                 </div>
                             </div>

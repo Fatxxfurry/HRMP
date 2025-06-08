@@ -23,20 +23,34 @@ import { useAuth } from '@/context/AuthContext'
 import { useParams } from 'react-router'
 import axios from 'axios'
 import { toast } from "sonner"
-    interface UpdateEmployeeProps {
-        name: string,
-        address: string,
-        phone: string,
-        email: string,
-        position: string,
-        role: string,
-        gender: string,
-        identification: string,
-        birth_date: string,
-        hire_date: string,
-        username: string
-        password: string,
-    }
+import {
+    Popover,
+    PopoverContent,
+    PopoverTrigger,
+} from "@/components/ui/popover"
+import { Calendar } from "@/components/ui/calendar"
+import { CalendarIcon } from "lucide-react"
+import { set } from 'date-fns'
+
+interface UpdateEmployeeProps {
+    name: string,
+    address: string,
+    phone: string,
+    email: string,
+    position: string,
+    role: string,
+    gender: string,
+    identification: string,
+    birth_date: string,
+    hire_date: string,
+    username: string
+    password: string,
+    bank: string,
+    bank_number: string,
+    insurance: string,
+
+}
+
 
 export default function UpdateEmployee() {
     const [Employee, setEmployee] = useState<UpdateEmployeeProps>({
@@ -52,10 +66,13 @@ export default function UpdateEmployee() {
         hire_date: "",
         username: "",
         password: "",
+        bank: "",
+        bank_number: "",
+        insurance: "",
     })
     const { id } = useParams<{ id: string }>();
 
-    const {user} = useAuth()
+    const { user } = useAuth()
     useEffect(() => {
         LoadEmployee();
     }, [user]);
@@ -69,8 +86,9 @@ export default function UpdateEmployee() {
         }
     };
     const UpdateEmployee = async () => {
-       
+
         try {
+            console.log("Cập nhật nhân viên:", Employee);
             const response = await axios.put(`http://localhost:8080/api/employees/${id}`, Employee);
             console.log("Nhân viên đã được cập nhật:", response.data);
             toast("Nhân viên đã được cập nhật thành công!");
@@ -80,10 +98,11 @@ export default function UpdateEmployee() {
 
         }
     }
-  
+
+
     return (
         <div className="flex flex-1 flex-col gap-4 p-4">
-            <div className="min-h-[100vh] flex-1 rounded-xl bg-muted/50 md:min-h-min p-4" >
+            <div className="min-h-[100vh] flex-1 rounded-xl bg-[#F0F0EF] md:min-h-min p-4" >
                 <span className="font-bold block text-center mb-4">Sửa thông tin nhân viên</span>
                 <div className="grid auto-rows-min gap-4 md:grid-cols-2">
                     <div>
@@ -142,18 +161,43 @@ export default function UpdateEmployee() {
                             onChange={(e) => setEmployee({ ...Employee, identification: e.target.value })}
                         />
                     </div>
-                    <div>
+                    <div className="relative">
                         <Label >Ngày sinh</Label>
-                        <Input type="text" id="birth_date"
+                        <Input type="date" id="birth_date"
                             value={Employee.birth_date}
-                            onChange={(e) => setEmployee({ ...Employee, birth_date: e.target.value })} />
+
+                            onChange={(e) => {
+                                setEmployee({ ...Employee, birth_date: e.target.value })
+
+                            }
+                            } />
+
                     </div>
                     <div>
                         <Label >Ngày bắt đầu làm việc</Label>
-                        <Input type="text" id="hire_date"
+                        <Input type="date" id="hire_date"
                             value={Employee.hire_date}
                             onChange={(e) => setEmployee({ ...Employee, hire_date: e.target.value })}
                         />
+                    </div>
+                    <div>
+                        <Label >Ngân hàng</Label>
+                        <Input type="text" id="bank"
+                            value={Employee.bank}
+                            onChange={(e) => setEmployee({ ...Employee, bank: e.target.value })}
+                        />
+                    </div>
+                    <div>
+                        <Label >Số tài khoản</Label>
+                        <Input type="text" id="bank_number"
+                            value={Employee.bank_number}
+                            onChange={(e) => setEmployee({ ...Employee, bank_number: e.target.value })} />
+                    </div>
+                    <div>
+                        <Label >Số bảo hiểm xã hội</Label>
+                        <Input type="text" id="insurance"
+                            value={Employee.insurance}
+                            onChange={(e) => setEmployee({ ...Employee, insurance: e.target.value })} />
                     </div>
                 </div>
                 <div className="flex justify-center mt-4">
