@@ -30,6 +30,7 @@ import AddSalary from "@/components/defined/AddSalary";
 import FaceRecognition from "@/components/defined/FaceRecognition";
 import EmployeeCalendar from "@/pages/TabManagement/EmployeeCalendar";
 import OverallSetting from "@/pages/TabSetting/OverallSetting";
+import AddProject from "@/components/defined/AddProject";
 const router = createBrowserRouter([
   {
     path: "/",
@@ -122,6 +123,10 @@ const router = createBrowserRouter([
           {
             path: "setting",
             element: <OverallSetting />,
+          },
+          {
+            path: "add-project/",
+            element: <AddProject />,
           }
         ],
       },

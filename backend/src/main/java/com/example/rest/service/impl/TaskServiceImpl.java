@@ -65,6 +65,10 @@ public class TaskServiceImpl implements TaskService {
                 existingTask.setDescription(task.getDescription());
             if (task.isFinished() != existingTask.isFinished())
                 existingTask.setFinished(task.isFinished());
+            if(task.getEnd_date() != null)
+                existingTask.setEnd_date(task.getEnd_date());
+            if(task.getStart_date() != null)
+                existingTask.setStart_date(task.getStart_date());
             return taskRepository.save(existingTask);
         }
         return null;

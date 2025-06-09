@@ -23,10 +23,14 @@ import {
 } from "@/components/ui/sidebar"
 import { useAuth } from "@/context/AuthContext"
 // This is sample data.
-const Admindata = {
+
+
+export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
+  const { user, loading, logout } = useAuth()
+  const Admindata = {
   user: {
     name: "shadcn",
-    avatar: "/avatars/shadcn.jpg",
+    avatar: user?.avatar || "/avatars/default.jpg",
   },
   teams: [
     {
@@ -111,7 +115,7 @@ const Admindata = {
 const Userdata = {
   user: {
     name: "shadcn",
-    avatar: "/avatars/shadcn.jpg",
+    avatar: user?.avatar || "/avatars/default.jpg",
   },
   teams: [
     {
@@ -193,22 +197,19 @@ const Userdata = {
     },
   ],
 }
-export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
-  const { user, loading, logout } = useAuth()
-
   if (loading) return null // hoặc loading spinner
 
   const navData = user?.role === "admin" ? {
     ...Admindata,
     user: {
-      name: user?.username || "Người dùng",
-      avatar:  "/avatars/default.jpg",
+      name: user?.name || "Người dùng",
+      avatar:  user?.avatar || "/avatars/default.jpg",
     }
   } : {
     ...Userdata,
     user: {
-      name: user?.username || "Người dùng",
-      avatar:  "/avatars/default.jpg",
+      name: user?.name || "Người dùng",
+      avatar: user?.avatar || "/avatars/default.jpg",
     }
   }
 

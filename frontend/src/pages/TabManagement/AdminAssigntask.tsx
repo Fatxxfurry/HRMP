@@ -170,6 +170,7 @@ export default function AdminAssigntask() {
                 if (response.status === 200) {
                     toast("Cập nhật task thành công")
                     setShowEditDialog(false)
+                    console.log("Task updated successfully:", response.data)
                     loadTaskData() // Reload task data after update
                 } else {
                     toast("Cập nhật task thất bại")
@@ -219,9 +220,9 @@ export default function AdminAssigntask() {
         AssignNewTask()
     }
     const [projectfilter, setprojectfilter] = useState("")
-    const projects = [...new Set(TaskProjectdata.map((project) => project.project?.involededDepartments?.name))]
+    const projects = [...new Set(TaskProjectdata.map((project) => project.project?.name))]
     const filteredData = TaskProjectdata.filter((project) => {
-        const projectMatch = !projectfilter || project.project?.involededDepartments?.name === projectfilter
+        const projectMatch = !projectfilter || project.project?.name === projectfilter
         return projectMatch
     })
     const clearFilters = () => {

@@ -97,6 +97,7 @@ interface Employee {
     name: string,
     status: boolean,
 }
+import { Link } from "react-router";
 export default function AdminManagement() {
     const [searchProject, setSearchProject] = useState("");
     const [searchTask, setSearchTask] = useState("");
@@ -251,7 +252,6 @@ export default function AdminManagement() {
                 <div className="aspect-video rounded-xl bg-[#F0F0EF] p-4" >
                     <CardHeader className="items-center pb-0">
                         <CardTitle>Tình trạng active - unactive của nhân viên</CardTitle>
-                        <CardDescription>January - June 2024</CardDescription>
                     </CardHeader>
                     <CardContent className="flex-1 pb-0">
                         <ChartContainer
@@ -271,7 +271,6 @@ export default function AdminManagement() {
                 <div className="aspect-video rounded-xl bg-[#F0F0EF] p-4" >
                     <CardHeader className="items-center pb-0">
                         <CardTitle>Tiến độ dự án</CardTitle>
-                        <CardDescription>January - June 2024</CardDescription>
                     </CardHeader>
                     <CardContent className="flex-1 pb-0">
                         <ChartContainer
@@ -291,7 +290,6 @@ export default function AdminManagement() {
                 <div className="aspect-video rounded-xl bg-[#F0F0EF] p-4 " >
                     <CardHeader className="items-center pb-0">
                         <CardTitle>Tiến độ task</CardTitle>
-                        <CardDescription>January - June 2024</CardDescription>
                     </CardHeader>
                     <CardContent className="flex-1 pb-0">
                         <ChartContainer
@@ -404,6 +402,11 @@ export default function AdminManagement() {
                             </TableBody>
                         </Table>
                     </ScrollArea>
+                    <Link to='/admin/add-project'>
+                    <Button variant="outline" size="sm" className="m-4 bg-[#212021] text-white">
+                        Thêm dự án
+                    </Button>
+                </Link>
                 </div>
                 <div className="aspect-video rounded-xl bg-[#F0F0EF] p-4" >
                     <Input
