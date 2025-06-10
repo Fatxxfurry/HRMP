@@ -82,6 +82,7 @@ interface AttendanceData {
     checkOutTime: string,
     status: string,
     employee: Employee
+    workhour?: number; // Optional field for work hours
 }
 export default function AdminTimekeeping() {
     const [searchTerm, setSearchTerm] = useState("");
@@ -101,7 +102,21 @@ export default function AdminTimekeeping() {
         try {
             const response = await axios.get("http://localhost:8080/api/attendence");
             const data = response.data;
+            data.forEach((entry: AttendanceData) => {
+                // Chuyển đổi ngày thành định dạng YYYY-MM-DD
+                const dateObj = new Date(entry.date);
+                entry.date = dateObj.toISOString().split("T")[0];
+
+                // Tính giờ làm việc nếu có checkInTime và checkOutTime
+                if (entry.checkInTime && entry.checkOutTime) {
+                    const checkIn = new Date(`${entry.date}T${entry.checkInTime}`);
+                    const checkOut = new Date(`${entry.date}T${entry.checkOutTime}`);
+                    const diffHours = (checkOut.getTime() - checkIn.getTime()) / (1000 * 60 * 60);
+                    entry.workhour = diffHours > 0 ? Math.round(diffHours * 100) / 100 : 0; // Làm tròn 2 chữ số thập phân
+                }
+            })
             setAttendanceData(data);
+            console.log("Attendance data:", data);
             const today = new Date().toISOString().split("T")[0];
             const count: number = data.filter((entry: AttendanceData) =>
                 entry.status === "PRESENT"
@@ -286,6 +301,7 @@ export default function AdminTimekeeping() {
                                 <TableHead className="font-semibold text-white px-4 py-3">Mã nhân viên</TableHead>
                                 <TableHead className="font-semibold text-white px-4 py-3">Tên nhân viên</TableHead>
                                 <TableHead className="font-semibold text-white px-4 py-3">Ngày</TableHead>
+                                <TableHead className="font-semibold text-white px-4 py-3">Số giờ làm</TableHead>
                                 <TableHead className="font-semibold text-white px-4 py-3">Tình trạng</TableHead>
                             </TableRow>
                         </TableHeader>
@@ -296,6 +312,9 @@ export default function AdminTimekeeping() {
                                         <TableCell className="font-medium">{attendance.employee.id}</TableCell>
                                         <TableCell>{attendance.employee.name}</TableCell>
                                         <TableCell>{attendance.date}</TableCell>
+                                        <TableCell>
+                                            {attendance.workhour !== undefined ? `${attendance.workhour} giờ` : "Chưa chấm công"}
+                                        </TableCell>
                                         <TableCell>{attendance.status}</TableCell>
                                     </TableRow>
                                 ))
