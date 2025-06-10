@@ -23,10 +23,14 @@ import {
 } from "@/components/ui/sidebar"
 import { useAuth } from "@/context/AuthContext"
 // This is sample data.
-const Admindata = {
+
+
+export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
+  const { user, loading, logout } = useAuth()
+  const Admindata = {
   user: {
     name: "shadcn",
-    avatar: "/avatars/shadcn.jpg",
+    avatar: user?.avatar || "/avatars/default.jpg",
   },
   teams: [
     {
@@ -81,7 +85,7 @@ const Admindata = {
           url: "/admin/project-management",
         },
         {
-          title: "Assign tasks",
+          title: "Phân công công việc",
           url: "/admin/tasks-management",
         },
         {
@@ -92,27 +96,30 @@ const Admindata = {
           title: "Lịch",
           url: "/admin/calendar",
         },
-        {
-          title: "Thông tin",
-          url: "/admin/information",
-        },
+
       ],
     },
     {
-      title: "Cài đặt",
+     title: "Cài đặt",
       url: "#",
-      icon: Settings2
+      icon: Settings2,
+      items: [
+        {
+          title: "Cài đặt chung",
+          url: "setting",
+        }
+      ]
     },
   ],
 }
 const Userdata = {
   user: {
     name: "shadcn",
-    avatar: "/avatars/shadcn.jpg",
+    avatar: user?.avatar || "/avatars/default.jpg",
   },
   teams: [
     {
-      name: "Acme Inc",
+      name: "Công Ty TNHH MotMinhToi",
       logo: GalleryVerticalEnd,
       plan: "Enterprise",
     },
@@ -163,7 +170,7 @@ const Userdata = {
           url: "/user/project-management",
         },
         {
-          title: "Assign tasks",
+          title: "Phân công công việc",
           url: "/user/tasks-management",
         },
         {
@@ -174,35 +181,35 @@ const Userdata = {
           title: "Lịch",
           url: "/user/calendar",
         },
-        {
-          title: "Thông tin",
-          url: "/user/information",
-        },
+
       ],
     },
     {
       title: "Cài đặt",
       url: "#",
-      icon: Settings2
+      icon: Settings2,
+      items: [
+        {
+          title: "Cài đặt chung",
+          url: "setting",
+        }
+      ]
     },
   ],
 }
-export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
-  const { user, loading, logout } = useAuth()
-
   if (loading) return null // hoặc loading spinner
 
   const navData = user?.role === "admin" ? {
     ...Admindata,
     user: {
-      name: user?.username || "Người dùng",
-      avatar:  "/avatars/default.jpg",
+      name: user?.name || "Người dùng",
+      avatar:  user?.avatar || "/avatars/default.jpg",
     }
   } : {
     ...Userdata,
     user: {
-      name: user?.username || "Người dùng",
-      avatar:  "/avatars/default.jpg",
+      name: user?.name || "Người dùng",
+      avatar: user?.avatar || "/avatars/default.jpg",
     }
   }
 

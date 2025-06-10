@@ -8,6 +8,7 @@ type User = {
   name?: string
   username: string
   role: "admin" | "user"
+  avatar?: string
 }
 
 // Auth context type
@@ -58,6 +59,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         name: data.name,
         username: data.username,
         role: data.role,
+        avatar: data.avatar // Default avatar if not provided
       }
       console.log("Logged in user:", loggedInUser)
       if (loggedInUser.role === "ROLE_MANAGER") {

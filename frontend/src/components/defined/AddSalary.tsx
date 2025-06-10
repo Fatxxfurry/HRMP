@@ -64,7 +64,7 @@ export default function AddSalary() {
 
     return (
         <div className="flex flex-1 flex-col gap-4 p-4">
-            <div className="min-h-[100vh] flex-1 rounded-xl bg-muted/50 md:min-h-min p-4" >
+            <div className="min-h-[100vh] flex-1 rounded-xl bg-[#F0F0EF] md:min-h-min p-4" >
                 <span className="font-bold block text-center mb-4">Tạo lịch nhận lương cho nhân viên</span>
                 <div className="grid auto-rows-min gap-4 md:grid-cols-2">
                     <div>
@@ -129,7 +129,7 @@ export default function AddSalary() {
                      <div>
                         <Label >Ngày nhận dự kiến</Label>
                         <Input
-                            type="text"
+                            type="date"
                             id="date_paid"
                             value={EmployeeSalary.date_paid}
                             onChange={(e) => setEmployeeSalary({ ...EmployeeSalary, date_paid: e.target.value })} />

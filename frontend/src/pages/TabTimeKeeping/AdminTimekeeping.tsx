@@ -82,6 +82,7 @@ interface AttendanceData {
     checkOutTime: string,
     status: string,
     employee: Employee
+    workhour?: number; // Optional field for work hours
 }
 export default function AdminTimekeeping() {
     const [searchTerm, setSearchTerm] = useState("");
@@ -101,7 +102,21 @@ export default function AdminTimekeeping() {
         try {
             const response = await axios.get("http://localhost:8080/api/attendence");
             const data = response.data;
+            data.forEach((entry: AttendanceData) => {
+                // Chuyển đổi ngày thành định dạng YYYY-MM-DD
+                const dateObj = new Date(entry.date);
+                entry.date = dateObj.toISOString().split("T")[0];
+
+                // Tính giờ làm việc nếu có checkInTime và checkOutTime
+                if (entry.checkInTime && entry.checkOutTime) {
+                    const checkIn = new Date(`${entry.date}T${entry.checkInTime}`);
+                    const checkOut = new Date(`${entry.date}T${entry.checkOutTime}`);
+                    const diffHours = (checkOut.getTime() - checkIn.getTime()) / (1000 * 60 * 60);
+                    entry.workhour = diffHours > 0 ? Math.round(diffHours * 100) / 100 : 0; // Làm tròn 2 chữ số thập phân
+                }
+            })
             setAttendanceData(data);
+            console.log("Attendance data:", data);
             const today = new Date().toISOString().split("T")[0];
             const count: number = data.filter((entry: AttendanceData) =>
                 entry.status === "PRESENT"
@@ -208,26 +223,26 @@ export default function AdminTimekeeping() {
     return (
         <div className="flex flex-1 flex-col gap-4 p-4 pt-0">
             <div className="grid auto-rows-min gap-4 md:grid-cols-4">
-                <div className="aspect-video rounded-xl bg-muted/50 p-4" >
+                <div className="aspect-video rounded-xl  p-4 bg-[#F0F0EF]">
                     <span className="font-bold block text-green-500">Đúng giờ</span>
                     <span className="block text-5xl text-green-500">{presentDay}</span>
                 </div>
-                <div className="aspect-video rounded-xl bg-muted/50 p-4" >
+                <div className="aspect-video rounded-xl bg-[#F0F0EF] p-4" >
                     <span className="font-bold block text-red-500">Đi muộn </span>
                     <span className="block text-5xl text-red-500">{lateDay}</span>
                 </div>
-                <div className="aspect-video rounded-xl bg-muted/50 p-4 " >
+                <div className="aspect-video rounded-xl bg-[#F0F0EF] p-4 " >
                     <span className="font-bold block text-cyan-500">Tỉ lệ tham gia </span>
                     <span className="block text-5xl text-cyan-500">{attendanceRate}%</span>
                 </div>
 
-                <div className="aspect-video rounded-xl bg-muted/50 p-4" >
+                <div className="aspect-video rounded-xl bg-[#F0F0EF] p-4" >
                     <span className="font-bold block text-blue-500">Nghỉ phép / vắng </span>
                     <span className="block text-5xl text-blue-500">{absentDay}</span>
                 </div>
             </div>
             <div className="grid auto-rows-min gap-4 md:grid-cols-2">
-                <div className="aspect-video rounded-xl bg-muted/50 p-4">
+                <div className="aspect-video rounded-xl bg-[#F0F0EF] p-4">
                     <CardHeader>
                         <CardTitle>Số giờ làm việc trong tuần</CardTitle>
                     </CardHeader>
@@ -271,22 +286,23 @@ export default function AdminTimekeeping() {
 
             </div>
 
-            <div className="min-h-[100vh] flex-1 rounded-xl bg-muted/50 md:min-h-min overflow-auto max-h-screen" >
+            <div className="min-h-[100vh] flex-1 rounded-xl  md:min-h-min overflow-auto max-h-screen bg-[#F0F0EF]" >
                 <Input
                     placeholder="Tìm kiếm nhân viên..."
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
                     className="m-4 w-full max-w-sm"
                 />
-                <ScrollArea className="h-[200px] rounded-md border p-4">
+                <ScrollArea className="h-[200px] rounded-md border p-4 ">
                     <Table >
                         <TableCaption>Danh sách tình trạng chấm công của nhân viên.</TableCaption>
-                        <TableHeader>
-                            <TableRow>
-                                <TableHead >Mã nhân viên</TableHead>
-                                <TableHead>Tên nhân viên</TableHead>
-                                <TableHead>Ngày</TableHead>
-                                <TableHead >Tình trạng</TableHead>
+                        <TableHeader className="bg-[#2D2D38] border-b-2 text-white">
+                            <TableRow className="divide-x divide-slate-200">
+                                <TableHead className="font-semibold text-white px-4 py-3">Mã nhân viên</TableHead>
+                                <TableHead className="font-semibold text-white px-4 py-3">Tên nhân viên</TableHead>
+                                <TableHead className="font-semibold text-white px-4 py-3">Ngày</TableHead>
+                                <TableHead className="font-semibold text-white px-4 py-3">Số giờ làm</TableHead>
+                                <TableHead className="font-semibold text-white px-4 py-3">Tình trạng</TableHead>
                             </TableRow>
                         </TableHeader>
                         <TableBody>
@@ -296,6 +312,9 @@ export default function AdminTimekeeping() {
                                         <TableCell className="font-medium">{attendance.employee.id}</TableCell>
                                         <TableCell>{attendance.employee.name}</TableCell>
                                         <TableCell>{attendance.date}</TableCell>
+                                        <TableCell>
+                                            {attendance.workhour !== undefined ? `${attendance.workhour} giờ` : "Chưa chấm công"}
+                                        </TableCell>
                                         <TableCell>{attendance.status}</TableCell>
                                     </TableRow>
                                 ))

@@ -1,4 +1,5 @@
 //Trang Admin Payment chứa thông tin về tình trạng lương, thưởng của các nhân viên 
+import { Eye, Edit, Trash2, Calendar } from "lucide-react"
 
 import React, { useState } from 'react'
 import {
@@ -158,8 +159,8 @@ export default function AdminPayment() {
         <div className="flex flex-1 flex-col gap-4 p-4 pt-0">
 
 
-            <div className="min-h-[100vh] flex-1 rounded-xl bg-muted/50 md:min-h-min" >
-                <div className="flex flex-row gap-4  mb-2">
+            <div className="min-h-[100vh] flex-1 rounded-xl bg-[#F0F0EF] md:min-h-min" >
+                <div className="flex flex-row gap-4 m-4">
                     <div className="space-y-2">
                         <Input
                             id="name-filter"
@@ -212,19 +213,19 @@ export default function AdminPayment() {
                 <ScrollArea className="h-[250px] rounded-md border p-4">
                     <Table>
                         <TableCaption>Danh sách nhân viên và lương tương ứng.</TableCaption>
-                        <TableHeader>
-                            <TableRow>
+                        <TableHeader className="bg-[#2D2D38] border-b-2 text-white">
+                            <TableRow className="divide-x divide-slate-200">
 
-                                <TableHead>Mã nhân viên</TableHead>
-                                <TableHead>Tên nhân viên</TableHead>
-                                <TableHead>Phòng ban trực thuộc</TableHead>
-                                <TableHead>Vị trí</TableHead>
-                                <TableHead>Lương cơ bản</TableHead>
-                                <TableHead>Thưởng</TableHead>
-                                <TableHead>Phạt</TableHead>
-                                <TableHead>Tổng cộng</TableHead>
-                                <TableHead>Ngày dự kiến nhận</TableHead>
-                                <TableHead>Thao tác</TableHead>
+                                <TableHead className="font-semibold text-white px-4 py-3">Mã nhân viên</TableHead>
+                                <TableHead className="font-semibold text-white px-4 py-3">Tên nhân viên</TableHead>
+                                <TableHead className="font-semibold text-white px-4 py-3">Phòng ban trực thuộc</TableHead>
+                                <TableHead className="font-semibold text-white px-4 py-3">Vị trí</TableHead>
+                                <TableHead className="font-semibold text-white px-4 py-3">Lương cơ bản</TableHead>
+                                <TableHead className="font-semibold text-white px-4 py-3">Thưởng</TableHead>
+                                <TableHead className="font-semibold text-white px-4 py-3">Phạt</TableHead>
+                                <TableHead className="font-semibold text-white px-4 py-3">Tổng cộng</TableHead>
+                                <TableHead className="font-semibold text-white px-4 py-3">Ngày dự kiến nhận</TableHead>
+                                <TableHead className="font-semibold text-white px-4 py-3">Thao tác</TableHead>
                             </TableRow>
                         </TableHeader>
                         <TableBody>
@@ -243,16 +244,16 @@ export default function AdminPayment() {
                                             <TableCell>{salary.date_paid}</TableCell>
 
                                             <TableCell className="space-x-2">
-                                                <Button variant="outline" size="sm" onClick={(event) => {
+                                                <Button variant="ghost" className="h-8 w-8 p-0 hover:bg-green-100 hover:text-green-600" size="sm" onClick={(event) => {
                                                     event.stopPropagation();
                                                     handleEdit(salary.id)
                                                 }}>
-                                                    Sửa
+                                                    <Edit className="h-4 w-4" />
                                                 </Button>
-                                                <Button variant="destructive" size="sm" onClick={() =>
+                                                <Button variant="ghost" size="sm" className="h-8 w-8 p-0 hover:bg-red-100 hover:text-red-600" onClick={() =>
                                                     handleDelete(salary)
                                                 }>
-                                                    Xóa
+                                                    <Trash2 className="h-4 w-4" />
                                                 </Button>
                                                 <Dialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
                                                     <DialogContent>
@@ -290,7 +291,7 @@ export default function AdminPayment() {
                     </Table>
                 </ScrollArea>
                 <Link to='/admin/add-salary'>
-                    <Button variant="outline" size="sm" className="mt-4" >
+                    <Button variant="outline" size="sm" className="m-4 bg-[#212021] text-white">
                         Thêm kế hoạch nhận lương
                     </Button>
                 </Link>

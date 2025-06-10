@@ -37,6 +37,9 @@ interface AddEmployeeProps {
     username: string
     password: string,
     avatar: string,
+    bank: string,
+    bank_number: string,
+    insurance: string,
 }
 
 export default function AddEmployee() {
@@ -55,6 +58,9 @@ export default function AddEmployee() {
         username: "",
         password: "",
         avatar: "",
+        bank: "",
+        bank_number: "",
+        insurance: "",
     })
     const CreateEmployee = async () => {
         const payload = {
@@ -71,7 +77,7 @@ export default function AddEmployee() {
             const response = await axios.post("http://localhost:8080/api/employees", payload);
             console.log("Nhân viên đã được tạo:", response.data);
             toast("Nhân viên đã được tạo thành công!");
-            
+
         } catch (error) {
             console.error("Lỗi khi tạo nhân viên:", error);
             toast("Nhân viên đã được tạo thất bại!");
@@ -79,7 +85,7 @@ export default function AddEmployee() {
     };
     return (
         <div className="flex flex-1 flex-col gap-4 p-4">
-            <div className="min-h-[100vh] flex-1 rounded-xl bg-muted/50 md:min-h-min p-4" >
+            <div className="min-h-[100vh] flex-1 rounded-xl bg-[#F0F0EF] md:min-h-min p-4" >
                 <span className="font-bold block text-center mb-4">Thêm nhân viên</span>
                 <div className="grid auto-rows-min gap-4 md:grid-cols-2">
                     <div>
@@ -176,15 +182,14 @@ export default function AddEmployee() {
                     </div>
                     <div>
                         <Label >Ngày sinh</Label>
-                        <Input type="text" id="birth_date"
-                            placeholder='yyyy-mm-dd'
+                        <Input type="date" id="birth_date"
                             value={newEmployee.birth_date}
                             onChange={(e) => setNewEmployee({ ...newEmployee, birth_date: e.target.value })} />
                     </div>
                     <div>
                         <Label >Ngày bắt đầu làm việc</Label>
-                        <Input type="text" id="hire_date"
-                            placeholder='yyyy-mm-dd'
+                        <Input type="date" id="hire_date"
+
                             value={newEmployee.hire_date}
                             onChange={(e) => setNewEmployee({ ...newEmployee, hire_date: e.target.value })}
                         />
@@ -201,6 +206,26 @@ export default function AddEmployee() {
                         <Input type="text" id="password"
                             value={newEmployee.password}
                             onChange={(e) => setNewEmployee({ ...newEmployee, password: e.target.value })} />
+                    </div>
+                    <div>
+                        <Label >Ngân hàng</Label>
+                        <Input type="text" id="bank"
+                            value={newEmployee.bank}
+                            onChange={(e) => setNewEmployee({ ...newEmployee, bank: e.target.value })} />
+                    </div>
+                    <div>
+                        <Label >Số tài khoản</Label>
+                        <Input type="text" id="bank_number"
+                        
+                            value={newEmployee.bank_number}
+                            onChange={(e) => setNewEmployee({ ...newEmployee, bank_number: e.target.value })} />
+                    </div>
+                    <div>
+                        <Label >Số bảo hiểm</Label>
+                        <Input type="text" id="insurance"
+                            placeholder='10 số'
+                            value={newEmployee.insurance}
+                            onChange={(e) => setNewEmployee({ ...newEmployee, insurance: e.target.value })} />
                     </div>
                 </div>
                 <div className="flex justify-center mt-4">

@@ -192,13 +192,13 @@ export default function EmployeeManagement() {
             { status: "finished", number: 0, fill: "hsl(var(--chart-2))" },
             { status: "unfinished", number: 0, fill: "hsl(var(--chart-3))" },
         ]
- 
+
 
     return (
         <div className="flex flex-1 flex-col gap-4 p-4 pt-0">
             <div className="grid auto-rows-min gap-4 md:grid-cols-2">
-                <div className="aspect-video rounded-xl bg-muted/50">
-                    <CardHeader className="items-center pb-0">
+                <div className="aspect-video rounded-xl bg-[#F0F0EF]">
+                    <CardHeader className="items-center pb-0 m-4">
                         <CardTitle>Tiến độ dự án</CardTitle>
                         <CardDescription></CardDescription>
                         <div className="w-full mt-4">
@@ -219,7 +219,7 @@ export default function EmployeeManagement() {
                     </CardHeader>
                     <CardContent className="flex justify-center items-center h-40">
                         {selectedProject ? (
-                            <span className={`text-xl font-semibold ${selectedProject.finished ? 'text-green-600' : 'text-red-600'}`}>
+                            <span className={`text-4xl font-semibold ${selectedProject.finished ? 'text-green-600' : 'text-red-600'}`}>
                                 {selectedProject.finished ? 'Hoàn thành' : 'Chưa hoàn thành'}
                             </span>
                         ) : (
@@ -228,8 +228,8 @@ export default function EmployeeManagement() {
 
                     </CardContent>
                 </div>
-                <div className="aspect-video rounded-xl bg-muted/50" >
-                    <CardHeader className="items-center pb-0">
+                <div className="aspect-video rounded-xl bg-[#F0F0EF]" >
+                    <CardHeader className="items-center pb-0 m-4">
                         <CardTitle>Tổng số task đã hoàn thành</CardTitle>
                         <CardDescription></CardDescription>
                         <div className="w-full mt-4"></div>
@@ -250,19 +250,19 @@ export default function EmployeeManagement() {
                     </CardContent>
                 </div>
             </div>
-            <div className="min-h-[100vh] flex-1 rounded-xl bg-muted/50 md:min-h-min" >
+            <div className="min-h-[100vh] flex-1 rounded-xl bg-[#F0F0EF] md:min-h-min" >
                 <ScrollArea className="h-[250px] rounded-md border p-4">
                     <Table >
                         <TableCaption>Danh sách task của nhân viên {user?.id}.</TableCaption>
-                        <TableHeader>
-                            <TableRow>
-                                <TableHead >Mã Task</TableHead>
-                                <TableHead>Tên Task</TableHead>
-                                <TableHead>Tên dự án</TableHead>
-                                <TableHead>Ngày bắt đầu</TableHead>
-                                <TableHead >Deadline</TableHead>
-                                <TableHead >Trạng thái</TableHead>
-                                <TableHead >Thao tác</TableHead>
+                        <TableHeader className="bg-[#2D2D38] border-b-2 text-white">
+                            <TableRow className="divide-x divide-slate-200">
+                                <TableHead className="font-semibold text-white px-4 py-3">Mã Task</TableHead>
+                                <TableHead className="font-semibold text-white px-4 py-3">Tên Task</TableHead>
+                                <TableHead className="font-semibold text-white px-4 py-3">Tên dự án</TableHead>
+                                <TableHead className="font-semibold text-white px-4 py-3">Ngày bắt đầu</TableHead>
+                                <TableHead className="font-semibold text-white px-4 py-3">Deadline</TableHead>
+                                <TableHead className="font-semibold text-white px-4 py-3">Trạng thái</TableHead>
+                                <TableHead className="font-semibold text-white px-4 py-3">Thao tác</TableHead>
                             </TableRow>
                         </TableHeader>
                         <TableBody>

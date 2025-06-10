@@ -117,7 +117,7 @@ export default function EmployeeTimekeeping() {
       setPresentDay(count);
       setlateDay(latecount);
       setAbsentDay(absentcount);
-      setAttendanceRate((count / totalentry) * 100);
+      setAttendanceRate(Math.round((count / totalentry) * 100));
       console.log("Số ngày có mặt hôm nay:", count);
       const hourMap: { [day: string]: number } = {
         Sunday: 0,
@@ -156,26 +156,26 @@ export default function EmployeeTimekeeping() {
   return (
     <div className="flex flex-1 flex-col gap-4 p-4 pt-0">
       <div className="grid auto-rows-min gap-4 md:grid-cols-4">
-        <div className="aspect-video rounded-xl bg-muted/50 p-4" >
+        <div className="aspect-video rounded-xl bg-[#F0F0EF] p-4" >
           <span className="font-bold block text-green-500">Đúng giờ</span>
           <span className="block text-5xl text-green-500">{presentDay}</span>
         </div>
-        <div className="aspect-video rounded-xl bg-muted/50 p-4" >
+        <div className="aspect-video rounded-xl bg-[#F0F0EF] p-4" >
           <span className="font-bold block text-red-500">Đi muộn </span>
           <span className="block text-5xl text-red-500">{lateDay}</span>
         </div>
-        <div className="aspect-video rounded-xl bg-muted/50 p-4 " >
+        <div className="aspect-video rounded-xl bg-[#F0F0EF] p-4 " >
           <span className="font-bold block text-cyan-500">Tỉ lệ tham gia </span>
           <span className="block text-5xl text-cyan-500">{attendanceRate}%</span>
         </div>
 
-        <div className="aspect-video rounded-xl bg-muted/50 p-4" >
+        <div className="aspect-video rounded-xl bg-[#F0F0EF] p-4" >
           <span className="font-bold block text-blue-500">Nghỉ phép / vắng</span>
           <span className="block text-5xl text-blue-500">{absentDay}</span>
         </div>
       </div>
       <div className="grid auto-rows-min gap-4 md:grid-cols-2">
-        <div className="aspect-video rounded-xl bg-muted/50 p-4" >
+        <div className="aspect-video rounded-xl bg-[#F0F0EF] p-4" >
           <CardHeader>
             <CardTitle>Số giờ làm việc trong tuần</CardTitle>
           </CardHeader>

@@ -115,7 +115,7 @@ export default function FaceRecognition() {
           localStorage.setItem(userKey, checkInDateTime.toISOString());
         }
         
-        alert(`Nhận diện thành công! Chấm công lúc ${checkInTimeString}`);
+        alert(`Chấm công lúc ${checkInTimeString}`);
         
       } catch (error) {
         console.error("Lỗi khi gửi ảnh:", error);

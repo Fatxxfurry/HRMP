@@ -174,7 +174,7 @@ export default function Attendance() {
   return (
     <>
       <Button
-        className="border hover:bg-transparent text-black bg-transparent"
+        className="border hover:bg-transparent text-black bg-transparent border-[#212021] "
         onClick={handleClick}
       >
         {isPunchedIn ? "Punch out" : "Punch in"}

@@ -1,5 +1,5 @@
 //Trang AdminInfo: Chứa thông tin tổng quan cho Admin
-
+import { Eye, Edit, Trash2, Calendar } from "lucide-react"
 import { useState } from "react"
 import { Button } from "@/components/ui/button"
 import {
@@ -42,7 +42,7 @@ import {
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm } from "react-hook-form"
 import { z } from "zod"
-import { ScrollArea } from "@/components/ui/scroll-area"
+import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area"
 import { Link } from "react-router"
 import { useNavigate } from "react-router"
 import axios from "axios"
@@ -76,7 +76,11 @@ interface Employee {
     position: string,
     identification: string,
     role: string,
+    bank: string,
+    bank_number: string,
+    insurance: string,
 }
+
 export default function AdminInfo() {
     const [nameFilter, setNameFilter] = useState("")
     const [departmentFilter, setDepartmentFilter] = useState("")
@@ -169,8 +173,8 @@ export default function AdminInfo() {
     return (
 
         <div className="flex flex-1 flex-col gap-4 p-4 pt-0">
-            <div className="min-h-[100vh] flex-1 rounded-xl bg-muted/50 md:min-h-min" >
-                <ScrollArea className="rounded-md border p-4">
+            <div className="min-h-[100vh] flex-1 rounded-xl bg-[#F0F0EF] md:min-h-min" >
+                <ScrollArea className=" rounded-md border p-4">
                     <div className="flex flex-row gap-4  mb-2">
                         <div className="space-y-2">
                             <Input
@@ -221,92 +225,94 @@ export default function AdminInfo() {
 
                         )}
                     </div>
-                    <Table >
-                        <TableCaption>Danh sách nhân viên.</TableCaption>
-                        <TableHeader>
-                            <TableRow>
-                                <TableHead >Mã nhân viên</TableHead>
-                                <TableHead>Tên nhân viên</TableHead>
-                                <TableHead>Số điện thoại</TableHead>
-                                <TableHead>Ngày sinh</TableHead>
-                                <TableHead >Email</TableHead>
-                                <TableHead >Địa chỉ</TableHead>
-                                <TableHead >Ngày gia nhập</TableHead>
-                                <TableHead >Phòng ban</TableHead>
-                                <TableHead >Vị trí</TableHead>
-                                <TableHead >Thao tác</TableHead>
-                            </TableRow>
-                        </TableHeader>
-                        <TableBody>
-                            {filteredData.length > 0 ? (
-                                filteredData.map((employee) => (
-                                    <TableRow key={employee.id}>
-                                        <TableCell className="font-medium">{employee.id}</TableCell>
-                                        <TableCell>{employee?.name}</TableCell>
-                                        <TableCell>{employee.phone}</TableCell>
-                                        <TableCell>{employee.birth_date}</TableCell>
-                                        <TableCell>{employee.email}</TableCell>
-                                        <TableCell>{employee.address}</TableCell>
-                                        <TableCell>{employee.hire_date}</TableCell>
-                                        <TableCell>{employee.department?.name}</TableCell>
-                                        <TableCell>{employee.position}</TableCell>
-                                        <TableCell className="space-x-2">
-                                            <Button variant="outline" size="sm" onClick={(event) => {
-                                                event.stopPropagation(); // Ngăn sự kiện click lan lên TableRow
-                                                handleEdit(employee.id);    // Gọi logic sửa
-                                            }}>
-                                                Sửa
-                                            </Button>
+                        <Table className="w-full">
+                            <TableCaption>Danh sách nhân viên.</TableCaption>
+                            <TableHeader className="bg-[#2D2D38] border-b-2 text-white">
+                                <TableRow className="divide-x divide-slate-200">
+                                    <TableHead className="font-semibold text-white px-4 py-3">Mã nhân viên</TableHead>
+                                    <TableHead className="font-semibold text-white px-4 py-3">Tên nhân viên</TableHead>
+                                    <TableHead className="font-semibold text-white px-4 py-3">Số điện thoại</TableHead>
+                                    <TableHead className="font-semibold text-white px-4 py-3">Ngày sinh</TableHead>
+                                    <TableHead className="font-semibold text-white px-4 py-3">Email</TableHead>
+                                    <TableHead className="font-semibold text-white px-4 py-3">Địa chỉ</TableHead>
+                                    <TableHead className="font-semibold text-white px-4 py-3">Ngày gia nhập</TableHead>
+                                    <TableHead className="font-semibold text-white px-4 py-3">Phòng ban</TableHead>
+                                    <TableHead className="font-semibold text-white px-4 py-3">Vị trí</TableHead>
+                                    <TableHead className="font-semibold text-white px-4 py-3">Thao tác</TableHead>
+                                </TableRow>
+                            </TableHeader>
+                            <TableBody>
+                                {filteredData.length > 0 ? (
+                                    filteredData.map((employee) => (
+                                        <TableRow key={employee.id}>
+                                            <TableCell className="font-medium">{employee.id}</TableCell>
+                                            <TableCell>{employee?.name}</TableCell>
+                                            <TableCell>{employee.phone}</TableCell>
+                                            <TableCell>{employee.birth_date}</TableCell>
+                                            <TableCell>{employee.email}</TableCell>
+                                            <TableCell>{employee.address}</TableCell>
+                                            <TableCell>{employee.hire_date}</TableCell>
+                                            <TableCell>{employee.department?.name}</TableCell>
+                                            <TableCell>{employee.position}</TableCell>
+                                            <TableCell className="space-x-2">
+                                                <Button variant="ghost" size="sm" className="h-8 w-8 p-0 hover:bg-green-100 hover:text-green-600"
+                                                    onClick={(event) => {
+                                                        event.stopPropagation(); // Ngăn sự kiện click lan lên TableRow
+                                                        handleEdit(employee.id);    // Gọi logic sửa
+                                                    }}>
+                                                    <Edit className="h-4 w-4" />
+                                                </Button>
 
-                                            <Button variant="destructive" size="sm" onClick={() => handleDelete(employee)}>
-                                                Xóa
-                                            </Button>
-                                            <Button variant="outline" size="sm" onClick={() => handleClickTable(employee.id)}>
-                                                Xem
-                                            </Button>
-                                            <Dialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
-                                                <DialogContent>
-                                                    <DialogHeader>
-                                                        <DialogTitle>Xác nhận xoá</DialogTitle>
-                                                        <DialogDescription>
-                                                            Bạn có chắc chắn muốn xoá task này không? Hành động này không thể hoàn tác.
-                                                        </DialogDescription>
-                                                    </DialogHeader>
-                                                    <div className="flex justify-end gap-2">
-                                                        <Button variant="outline" onClick={() => setShowDeleteDialog(false)}>
-                                                            Huỷ
-                                                        </Button>
-                                                        <Button
-                                                            variant="destructive"
-                                                            onClick={confirmDelete}
-                                                        >
-                                                            Xoá
-                                                        </Button>
-                                                    </div>
-                                                </DialogContent>
-                                            </Dialog>
+                                                <Button variant="ghost" size="sm" className="h-8 w-8 p-0 hover:bg-red-100 hover:text-red-600"
+                                                    onClick={() => handleDelete(employee)}>
+                                                    <Trash2 className="h-4 w-4" />
+                                                </Button>
+                                                <Button variant="ghost" size="sm" className="h-8 w-8 p-0 hover:bg-blue-100 hover:text-blue-600"
+                                                    onClick={() => handleClickTable(employee.id)}>
+                                                    <Eye className="h-4 w-4" />
+                                                </Button>
+                                                <Dialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
+                                                    <DialogContent>
+                                                        <DialogHeader>
+                                                            <DialogTitle>Xác nhận xoá</DialogTitle>
+                                                            <DialogDescription>
+                                                                Bạn có chắc chắn muốn xoá task này không? Hành động này không thể hoàn tác.
+                                                            </DialogDescription>
+                                                        </DialogHeader>
+                                                        <div className="flex justify-end gap-2">
+                                                            <Button variant="outline" onClick={() => setShowDeleteDialog(false)}>
+                                                                Huỷ
+                                                            </Button>
+                                                            <Button
+                                                                variant="destructive"
+                                                                onClick={confirmDelete}
+                                                            >
+                                                                Xoá
+                                                            </Button>
+                                                        </div>
+                                                    </DialogContent>
+                                                </Dialog>
+                                            </TableCell>
+                                        </TableRow>
+                                    ))
+                                ) : (
+
+                                    <TableRow>
+                                        <TableCell colSpan={4} className="text-center">
+                                            Không tìm thấy kết quả.
                                         </TableCell>
                                     </TableRow>
-                                ))
-                            ) : (
-
-                                <TableRow>
-                                    <TableCell colSpan={4} className="text-center">
-                                        Không tìm thấy kết quả.
-                                    </TableCell>
-                                </TableRow>
-                            )}
-                        </TableBody>
-                    </Table>
-
+                                )}
+                            </TableBody>
+                        </Table>
+                        <ScrollBar orientation="horizontal" />
                 </ScrollArea>
                 <Link to='/admin/add-employee'>
-                    <Button variant="outline" size="sm" className="mt-4">
+                    <Button variant="outline" size="sm" className="m-4 bg-[#212021] text-white">
                         Thêm nhân viên
                     </Button>
                 </Link>
-
-            </div>
+        </div>
         </div >
     )
 }
