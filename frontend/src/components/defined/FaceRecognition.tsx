@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Loader2 } from 'lucide-react';
 import { usePunchIn } from '@/context/AttendanceContext';
 import { useAuth } from '@/context/AuthContext';
+import { useNavigate } from 'react-router';
 const videoConstraints = {
   width: 480,
   height: 360,
@@ -29,15 +30,16 @@ export default function FaceRecognition() {
   const [imageSrc, setImageSrc] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [recognitionResult, setRecognitionResult] = useState<FaceRecognitionResponse | null>(null);
-  
+  const navigate = useNavigate(); // đặt trong component
+
   // Use the same context as AttendanceButton
-  const { 
-    isPunchedIn, 
-    setIsPunchedIn, 
+  const {
+    isPunchedIn,
+    setIsPunchedIn,
     setCheckInTime,
-    secondsElapsed 
+    secondsElapsed
   } = usePunchIn();
-  
+
   const { user } = useAuth();
 
   const formatTime = (totalSeconds: number) => {
@@ -62,7 +64,7 @@ export default function FaceRecognition() {
           const userKey = `checkinDate-${user.id}`;
           const today = new Date().toISOString().split('T')[0];
           const savedDate = localStorage.getItem(userKey);
-          
+
           if (savedDate) {
             const savedDateOnly = new Date(savedDate).toISOString().split('T')[0];
             if (savedDateOnly === today) {
@@ -93,7 +95,7 @@ export default function FaceRecognition() {
         );
 
         console.log("Kết quả từ server:", response.data);
-        
+
         // Lưu kết quả nhận diện
         setRecognitionResult(response.data);
         setImageSrc(image);
@@ -101,26 +103,32 @@ export default function FaceRecognition() {
         // Parse thời gian check-in từ response
         const checkInTimeString = response.data.checkInTime;
         const today = response.data.date;
-        
+
         // Tạo Date object từ date và checkInTime
         const checkInDateTime = new Date(`${today}T${checkInTimeString}`);
-        
+        if (!checkInTimeString) {
+          alert("Không có thời gian chấm công. Vui lòng thử lại.");
+          setIsLoading(false);
+          navigate("/login"); // Điều hướng sau khi nhấn OK
+          return;
+        }
         // Cập nhật trạng thái punch in (giống như AttendanceButton)
         setCheckInTime(checkInDateTime);
         setIsPunchedIn(true);
-        
+
+
         // Lưu vào localStorage (giống như AttendanceButton)
         if (user) {
           const userKey = `checkinDate-${user.id}`;
           localStorage.setItem(userKey, checkInDateTime.toISOString());
         }
-        
+
         alert(`Chấm công lúc ${checkInTimeString}`);
-        
+
       } catch (error) {
         console.error("Lỗi khi gửi ảnh:", error);
         alert("Có lỗi xảy ra. Vui lòng thử lại.");
-       
+
       } finally {
         setIsLoading(false);
       }
@@ -142,9 +150,9 @@ export default function FaceRecognition() {
             videoConstraints={videoConstraints}
             className="rounded-xl border border-gray-300 shadow-md"
           />
-          <Button 
-            className="mt-4 px-8 py-2" 
-            onClick={capture} 
+          <Button
+            className="mt-4 px-8 py-2"
+            onClick={capture}
             disabled={isLoading || isPunchedIn}
           >
             {isLoading ? (
@@ -157,7 +165,7 @@ export default function FaceRecognition() {
               "Punch In"
             )}
           </Button>
-          
+
           {/* Display timer if punched in */}
           {isPunchedIn && (
             <div className="mt-4 text-center">
@@ -179,7 +187,7 @@ export default function FaceRecognition() {
               <p className="text-gray-600">Đang nhận diện khuôn mặt...</p>
             </div>
           )}
-          
+
           {imageSrc && !isLoading && (
             <>
               <p className="mb-2 text-gray-700 font-medium">Ảnh đã chụp:</p>
@@ -190,7 +198,7 @@ export default function FaceRecognition() {
               />
             </>
           )}
-          
+
           {recognitionResult && !isLoading && (
             <div className="mt-4 p-4 bg-green-50 border border-green-200 rounded-lg">
               <h3 className="font-semibold text-green-800 mb-2">
@@ -200,14 +208,13 @@ export default function FaceRecognition() {
                 <p><strong>Tên:</strong> {recognitionResult.employee.name}</p>
                 <p><strong>Ngày:</strong> {recognitionResult.date}</p>
                 <p><strong>Giờ vào:</strong> {recognitionResult.checkInTime}</p>
-                <p><strong>Trạng thái:</strong> 
-                  <span className={`ml-1 font-medium ${
-                    recognitionResult.status === 'PRESENT' ? 'text-green-600' :
+                <p><strong>Trạng thái:</strong>
+                  <span className={`ml-1 font-medium ${recognitionResult.status === 'PRESENT' ? 'text-green-600' :
                     recognitionResult.status === 'LATE' ? 'text-yellow-600' :
-                    'text-red-600'
-                  }`}>
+                      'text-red-600'
+                    }`}>
                     {recognitionResult.status === 'PRESENT' ? 'Đúng giờ' :
-                     recognitionResult.status === 'LATE' ? 'Muộn' : 'Vắng'}
+                      recognitionResult.status === 'LATE' ? 'Muộn' : 'Vắng'}
                   </span>
                 </p>
               </div>
